@@ -1,0 +1,9 @@
+.dockerignore
+.env
+.vs
+.vscode
+*/bin
+*/obj
+**/.toolstarget
+**/TestResults/
+**/node_modules
