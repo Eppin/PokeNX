@@ -55,6 +55,12 @@
         {
             _diamondPearlService = diamondPearlService;
 
+            EventAggregator.RegisterHandler<UseSeedMessage>(message =>
+            {
+                Seed0 = message.Seed0;
+                Seed1 = message.Seed1;
+            });
+
             OnGenerateCommand = ReactiveCommand.Create(GenerateExecute);
         }
 

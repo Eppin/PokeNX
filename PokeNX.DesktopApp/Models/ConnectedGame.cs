@@ -1,6 +1,7 @@
 ﻿namespace PokeNX.DesktopApp.Models
 {
     using Core.Models.Enums;
+    using Utils;
 
     public class ConnectedGame
     {
@@ -10,8 +11,26 @@
 
         public uint SID { get; set; }
 
-        public bool HasShinyCharm { get; set; }
+        private bool _hasShinyCharm;
+        public bool HasShinyCharm
+        {
+            get => _hasShinyCharm;
+            set
+            {
+                _hasShinyCharm = value;
+                EventAggregator.PostMessage(new ProfileMessage(shinyCharm: value));
+            }
+        }
 
-        public bool HasOvalCharm { get; set; }
+        private bool _hasOvalCharm;
+        public bool HasOvalCharm
+        {
+            get => _hasOvalCharm;
+            set
+            {
+                _hasOvalCharm = value;
+                EventAggregator.PostMessage(new ProfileMessage(ovalCharm: value));
+            }
+        }
     }
 }
