@@ -1,0 +1,45 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:converters="clr-namespace:PokeNX.DesktopApp.Converters"
+             mc:Ignorable="d"
+             x:Class="PokeNX.DesktopApp.Controls.GenerateBox">
+
+    <UserControl.Resources>
+        <converters:HexConverter x:Key="HexConverter" />
+    </UserControl.Resources>
+
+	<StackPanel Spacing="10">
+        <TextBlock>Initial Advances</TextBlock>
+        <NumericUpDown Value="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type UserControl}}, Path=InitialAdvances, Mode=TwoWay}" Minimum="0"/>
+        <Separator BorderBrush="DarkGray" BorderThickness="0.4"/>
+
+		<TextBlock>Maximum Advances</TextBlock>
+        <NumericUpDown Value="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type UserControl}}, Path=MaximumAdvances, Mode=TwoWay}" Minimum="0"/>
+        <Separator BorderBrush="DarkGray" BorderThickness="0.4"/>
+
+        <TextBlock>Delay</TextBlock>
+        <NumericUpDown Value="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type UserControl}}, Path=Delay, Mode=TwoWay}" Minimum="0"/>
+        <Separator BorderBrush="DarkGray" BorderThickness="0.4"/>
+
+		<TextBlock>Seed 0</TextBlock>
+        <TextBox Text="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type UserControl}}, Path=Seed0, Mode=TwoWay, Converter={StaticResource HexConverter}}"/>
+        <Separator BorderBrush="DarkGray" BorderThickness="0.4"/>
+        
+        <TextBlock>Seed 1</TextBlock>
+        <TextBox Text="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type UserControl}}, Path=Seed1, Mode=TwoWay, Converter={StaticResource HexConverter}}"/>
+        <Separator BorderBrush="DarkGray" BorderThickness="0.4"/>
+
+		<TextBlock IsVisible="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type UserControl}}, Path=ShowCompatibilities, Mode=TwoWay}">Compatibility</TextBlock>
+        <ComboBox HorizontalAlignment="Stretch" Items="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type UserControl}}, Path=Compatibilities}" SelectedIndex="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type UserControl}}, Path=Compatibility}" IsVisible="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type UserControl}}, Path=ShowCompatibilities, Mode=TwoWay}"/>
+        <Separator BorderBrush="DarkGray" BorderThickness="0.4" IsVisible="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type UserControl}}, Path=ShowCompatibilities, Mode=TwoWay}"/>
+
+        <TextBlock IsVisible="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type UserControl}}, Path=ShowGenerators, Mode=TwoWay}">Generator</TextBlock>
+        <ComboBox HorizontalAlignment="Stretch" Items="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type UserControl}}, Path=Generators}" SelectedIndex="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type UserControl}}, Path=Generator}" IsVisible="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type UserControl}}, Path=ShowGenerators, Mode=TwoWay}"/>
+        <Separator BorderBrush="DarkGray" BorderThickness="0.4" IsVisible="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type UserControl}}, Path=ShowGenerators, Mode=TwoWay}"/>
+
+        <Button Command="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type UserControl}}, Path=GenerateCommand}" Content="Generate" HorizontalAlignment="Stretch" HorizontalContentAlignment="Center"/>
+    </StackPanel>
+
+</UserControl>

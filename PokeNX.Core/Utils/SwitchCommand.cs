@@ -46,6 +46,12 @@ namespace PokeNX.Core.Utils
             return Encode($"pointerPeek 0x{size:X} 0x{string.Join(" 0x", jumps)}");
         }
 
+        /// <summary>
+        /// Requests the title id of attached process.
+        /// </summary>
+        /// <returns>Encoded command bytes</returns>
+        public static byte[] GetTitleID() => Encode("getTitleID");
+
         private static byte[] Encode(string command) => Encoding.UTF8.GetBytes(command + "\r\n");
     }
 }

@@ -1,7 +1,7 @@
 ﻿using PokeNX.ConsoleApp;
 using PokeNX.Core;
 using PokeNX.Core.Generators;
-using PokeNX.Core.Models;
+using PokeNX.Core.Models.Enums;
 
 Console.WriteLine("Hello, World!");
 

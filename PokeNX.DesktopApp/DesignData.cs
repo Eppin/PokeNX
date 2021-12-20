@@ -4,6 +4,8 @@
 
     public static class DesignData
     {
-        public static Gen8EggsViewModel Gen8EggsViewModel { get; } = new();
+        public static Gen8EggsViewModel Gen8EggsViewModel { get; } = new(null!);
+
+        public static Gen8StationaryViewModel Gen8StationaryViewModel { get; } = new(null!);
     }
 }
