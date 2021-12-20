@@ -1,7 +1,6 @@
 namespace PokeNX.Core
 {
     using System;
-    using System.IO;
     using System.Linq;
     using System.Net;
     using Extensions;
@@ -28,27 +27,6 @@ namespace PokeNX.Core
                 ShiningPearlID => ShiningPearl,
                 _ => throw new ArgumentOutOfRangeException(nameof(titleId), titleId, $"Only compatible with {nameof(BrilliantDiamond)} or {nameof(ShiningPearl)}")
             };
-        }
-
-        public void TestBoxPointer()
-        {
-
-
-
-
-            //var boxStartOffset = ReadPointer(DiamondBoxStartPointer, sizeof(ulong)).Reverse().ToUlong();
-            var b1s1 = ReadBytesAbsolute(TestBox1S1Address(), 0x158);
-            File.WriteAllBytes(@"C:\Users\Kevin\Desktop\test.pb8", b1s1);
-        }
-
-        private ulong TestBox1S1Address()
-        {
-            const int size = sizeof(ulong);
-
-            var tmp = ReadPointer(DiamondBoxStartPointer, size).Reverse().ToUlong();
-
-            var addresses = new ulong[] { 0xB8, 0x10, 0xA0, 0x20, 0x20, 0x20 };
-            return addresses.Aggregate(tmp, (current, addition) => ReadBytesAbsolute(current + addition, size).Reverse().ToUlong());
         }
 
         public (ulong S0, ulong S1) MainRNG()
