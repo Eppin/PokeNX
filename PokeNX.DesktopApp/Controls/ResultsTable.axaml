@@ -1,0 +1,69 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d" d:DesignWidth="1400" d:DesignHeight="250"
+             x:Class="PokeNX.DesktopApp.Controls.ResultsTable">
+    
+    <DataGrid ColumnWidth="*" Items="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type UserControl}}, Path=Results}" AutoGenerateColumns="False" AlternatingRowBackground="#282828" SelectionMode="Single" CanUserReorderColumns="False" CanUserSortColumns="False" CanUserResizeColumns="False">
+        <DataGrid.Styles>
+            <Style Selector="DataGridRow">
+                <Setter Property="Background" Value="{Binding RowColor}" />
+            </Style>
+        </DataGrid.Styles>
+        <DataGrid.Resources>
+            <DataTemplate x:Key="HPTemplate">
+                <Grid ColumnDefinitions="Auto, Auto">
+                    <Label Grid.Column="0" Content="{Binding HP.Value}"/>
+                    <Label Grid.Column="1" FontSize="10" VerticalAlignment="Center" Content="{Binding HP.Inheritance, StringFormat='(\{0\})', Mode=OneWay}" IsVisible="{Binding HP.InheritanceVisible}"/>
+                </Grid>
+            </DataTemplate>
+            <DataTemplate x:Key="AtkTemplate">
+                <Grid ColumnDefinitions="Auto, Auto">
+                    <Label Grid.Column="0" Content="{Binding Atk.Value}"/>
+                    <Label Grid.Column="1" FontSize="10" VerticalAlignment="Center" Content="{Binding Atk.Inheritance, StringFormat='(\{0\})', Mode=OneWay}" IsVisible="{Binding Atk.InheritanceVisible}"/>
+                </Grid>
+            </DataTemplate>
+            <DataTemplate x:Key="DefTemplate">
+                <Grid ColumnDefinitions="Auto, Auto">
+                    <Label Grid.Column="0" Content="{Binding Def.Value}"/>
+                    <Label Grid.Column="1" FontSize="10" VerticalAlignment="Center" Content="{Binding Def.Inheritance, StringFormat='(\{0\})', Mode=OneWay}" IsVisible="{Binding Def.InheritanceVisible}"/>
+                </Grid>
+            </DataTemplate>
+            <DataTemplate x:Key="SpATemplate">
+                <Grid ColumnDefinitions="Auto, Auto">
+                    <Label Grid.Column="0" Content="{Binding SpA.Value}"/>
+                    <Label Grid.Column="1" FontSize="10" VerticalAlignment="Center" Content="{Binding SpA.Inheritance, StringFormat='(\{0\})', Mode=OneWay}" IsVisible="{Binding SpA.InheritanceVisible}"/>
+                </Grid>
+            </DataTemplate>
+            <DataTemplate x:Key="SpDTemplate">
+                <Grid ColumnDefinitions="Auto, Auto">
+                    <Label Grid.Column="0" Content="{Binding SpD.Value}"/>
+                    <Label Grid.Column="1" FontSize="10" VerticalAlignment="Center" Content="{Binding SpD.Inheritance, StringFormat='(\{0\})', Mode=OneWay}" IsVisible="{Binding SpD.InheritanceVisible}"/>
+                </Grid>
+            </DataTemplate>
+            <DataTemplate x:Key="SpeedTemplate">
+                <Grid ColumnDefinitions="Auto, Auto">
+                    <Label Grid.Column="0" Content="{Binding Speed.Value}"/>
+                    <Label Grid.Column="1" FontSize="10" VerticalAlignment="Center" Content="{Binding Speed.Inheritance, StringFormat='(\{0\})', Mode=OneWay}" IsVisible="{Binding Speed.InheritanceVisible}"/>
+                </Grid>
+            </DataTemplate>
+        </DataGrid.Resources>
+        <DataGrid.Columns>
+            <DataGridTextColumn Header="Advances" Binding="{Binding Advances, Mode=OneWay}" IsReadOnly="True"/>
+            <DataGridTextColumn Header="Egg Seed" Binding="{Binding Seed, StringFormat={}{0:X8}, Mode=OneWay}" IsReadOnly="True" />
+            <DataGridTextColumn Header="PID" Binding="{Binding PID, StringFormat={}{0:X8}, Mode=OneWay}" IsReadOnly="True" />
+            <DataGridTextColumn Header="EC" Binding="{Binding EC, StringFormat={}{0:X8}, Mode=OneWay}" IsReadOnly="True" />
+            <DataGridTextColumn Header="Shiny" Binding="{Binding Shiny}" IsReadOnly="True" />
+            <DataGridTemplateColumn Header="HP" CellTemplate="{StaticResource HPTemplate}"/>
+            <DataGridTemplateColumn Header="Atk" CellTemplate="{StaticResource AtkTemplate}"/>
+            <DataGridTemplateColumn Header="Def" CellTemplate="{StaticResource DefTemplate}"/>
+            <DataGridTemplateColumn Header="SpA" CellTemplate="{StaticResource SpATemplate}"/>
+            <DataGridTemplateColumn Header="SpD" CellTemplate="{StaticResource SpDTemplate}"/>
+            <DataGridTemplateColumn Header="Spe" CellTemplate="{StaticResource SpeedTemplate}"/>
+            <DataGridTextColumn Header="Gender" Binding="{Binding Gender}" IsReadOnly="True" />
+            <DataGridTextColumn Header="Nature" Binding="{Binding Nature, Mode=OneWay}" IsReadOnly="True" />
+            <DataGridTextColumn Header="Ability" Binding="{Binding Ability, Mode=OneWay}" IsReadOnly="True" />
+        </DataGrid.Columns>
+    </DataGrid>
+</UserControl>
