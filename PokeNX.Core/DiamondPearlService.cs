@@ -92,14 +92,7 @@ namespace PokeNX.Core
         {
             const int size = sizeof(ulong);
 
-            var offset = Game switch
-            {
-                BrilliantDiamond => DiamondPlayerPrefsProviderInstance,
-                ShiningPearl => PearlPlayerPrefsProviderInstance,
-                _ => throw new ArgumentOutOfRangeException(nameof(Game), Game, $"Only compatible with {nameof(BrilliantDiamond)} or {nameof(ShiningPearl)}")
-            };
-
-            var tmp = ReadBytesMain(offset, size).Reverse().ToUlong();
+            var tmp = ReadBytesMain(PlayerPrefsProviderInstance, size).Reverse().ToUlong();
 
             var addresses = new ulong[] { 0x18, 0xc0, 0x28, 0xb8, 0 };
             return addresses.Aggregate(tmp, (current, addition) => ReadBytesAbsolute(current + addition, size).Reverse().ToUlong());
