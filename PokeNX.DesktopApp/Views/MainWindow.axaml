@@ -64,12 +64,16 @@
             </StackPanel>
 
             <TabControl Grid.Row="2">
-				<TabItem Header="Eggs">
+                <TabItem Header="Eggs">
                     <views:Gen8Eggs DataContext="{Binding Gen8EggsViewModel}"/>
                 </TabItem>
 
-                <TabItem Header="Stationary">
-                    <views:Gen8Stationary DataContext="{Binding Gen8StationaryViewModel}"/>
+                <TabItem Header="Legendary">
+                    <views:Gen8Legendary DataContext="{Binding Gen8LegendaryViewModel}"/>
+                </TabItem>
+
+                <TabItem Header="Wild">
+                    <TextBlock Text="RNG Wild stuff, like all Unowns?"/>
                 </TabItem>
             </TabControl>
         </Grid>

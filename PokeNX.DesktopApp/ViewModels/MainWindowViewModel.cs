@@ -16,7 +16,7 @@ namespace PokeNX.DesktopApp.ViewModels
 
         public Gen8EggsViewModel Gen8EggsViewModel { get; }
 
-        public Gen8StationaryViewModel Gen8StationaryViewModel { get; }
+        public Gen8LegendaryViewModel Gen8LegendaryViewModel { get; }
 
         #region Properties
         private string _ipAddress = string.Empty;
@@ -66,7 +66,7 @@ namespace PokeNX.DesktopApp.ViewModels
         {
             DiamondPearlService = new DiamondPearlService();
             Gen8EggsViewModel = new Gen8EggsViewModel(DiamondPearlService);
-            Gen8StationaryViewModel = new Gen8StationaryViewModel(DiamondPearlService);
+            Gen8LegendaryViewModel = new Gen8LegendaryViewModel(DiamondPearlService);
 
             OnConnectCommand = ReactiveCommand.Create(OnConnectExecute);
             OnUseSeedCommand = ReactiveCommand.Create(OnUseSeedExecute);

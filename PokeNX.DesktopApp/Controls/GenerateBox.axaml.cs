@@ -52,22 +52,6 @@ namespace PokeNX.DesktopApp.Controls
             set => SetAndRaise(MaximumAdvancesProperty, ref _maximumAdvances, value);
         }
 
-        public static readonly DirectProperty<GenerateBox, uint> DelayProperty =
-            AvaloniaProperty.RegisterDirect<GenerateBox, uint>(
-                nameof(Delay),
-                o => o.Delay,
-                (o, v) => o.Delay = v,
-                default!,
-                BindingMode.TwoWay,
-                true);
-
-        private uint _delay;
-        public uint Delay
-        {
-            get => _delay;
-            set => SetAndRaise(DelayProperty, ref _delay, value);
-        }
-
         public static readonly DirectProperty<GenerateBox, ulong> Seed0Property =
             AvaloniaProperty.RegisterDirect<GenerateBox, ulong>(
                 nameof(Seed0),
@@ -112,7 +96,7 @@ namespace PokeNX.DesktopApp.Controls
         private int? _compatibility;
         public int? Compatibility
         {
-            get => _compatibility;
+            get => _compatibility == -1 ? 0 : _compatibility;
             set => SetAndRaise(CompatibilityProperty, ref _compatibility, value);
         }
 
@@ -128,7 +112,7 @@ namespace PokeNX.DesktopApp.Controls
         private int? _generator;
         public int? Generator
         {
-            get => _generator;
+            get => _generator == -1 ? 0 : _generator;
             set => SetAndRaise(GeneratorProperty, ref _generator, value);
         }
 
