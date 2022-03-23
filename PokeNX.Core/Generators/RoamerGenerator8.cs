@@ -5,14 +5,14 @@
     using Models.Enums;
     using RNG;
 
-    public class StationaryGenerator8 : Generator8
+    public class RoamerGenerator8 : Generator8
     {
-        public StationaryGenerator8(uint initialAdvances, uint maximumAdvances = 1_000)
+        public RoamerGenerator8(uint initialAdvances, uint maximumAdvances = 1_000)
             : base(initialAdvances, maximumAdvances)
         {
         }
 
-        public List<GenerateResult> Generate(ulong s0, ulong s1, Stationary8Request request)
+        public List<GenerateResult> Generate(ulong s0, ulong s1, Roamer8Request request)
         {
             var rng = new XorShift(s0, s1);
             rng.Advance(InitialAdvances);
@@ -23,15 +23,19 @@
             {
                 var gen = new XorShift(rng);
 
+                var seed = gen.Next();
+
                 var result = new GenerateResult
                 {
                     Advances = advances,
-                    EC = gen.Next()
+                    EC = seed
                 };
 
-                var shinyRandom = gen.Next();
+                var check = new Xoroshiro128Plus8B(seed);
 
-                var pid = gen.Next();
+                var shinyRandom = check.NextUInt();
+
+                var pid = check.NextUInt();
                 result.PID = pid;
 
                 var psv = shinyRandom & 0xFFFF ^ shinyRandom >> 0x10;
@@ -56,7 +60,7 @@
 
                         while (true)
                         {
-                            var ivRandom = gen.Next();
+                            var ivRandom = check.NextUInt();
                             index = ivRandom - ivRandom / 6 * 6;
 
                             if (ivs[index] == -1)
@@ -70,7 +74,7 @@
                 for (var i = 0; i < ivs.Length; i++)
                 {
                     if (ivs[i] == -1)
-                        ivs[i] = (int)(gen.Next() % 32);
+                        ivs[i] = (int)(check.NextUInt() % 32);
                 }
 
                 result.HP = new IVs((byte)ivs[0]);
@@ -80,17 +84,8 @@
                 result.SpD = new IVs((byte)ivs[4]);
                 result.Speed = new IVs((byte)ivs[5]);
 
-                result.Ability = (Ability)(gen.Next() % 2);
-
-                result.Gender = request.GenderRatio switch
-                {
-                    255 => Gender.Genderless,
-                    254 => Gender.Female,
-                    0 => Gender.Male,
-                    _ => (Gender)(gen.Next() % 253 + 1 < request.GenderRatio ? 1 : 0)
-                };
-
-                result.Nature = (Nature)(gen.Next() % 25);
+                result.Ability = (Ability)(check.NextUInt() % 2);
+                result.Nature = (Nature)(check.NextUInt() % 25);
 
                 if (Filter(request.Filter, result))
                     results.Add(result);

@@ -2,6 +2,7 @@ namespace PokeNX.Core.Utils
 {
     using System.Linq;
     using System.Text;
+    using Models.Enums;
 
     internal static class SwitchCommand
     {
@@ -47,10 +48,40 @@ namespace PokeNX.Core.Utils
         }
 
         /// <summary>
-        /// Requests the title id of attached process.
+        /// Requests the title ID of attached process.
         /// </summary>
         /// <returns>Encoded command bytes</returns>
-        public static byte[] GetTitleID() => Encode("getTitleID");
+        public static byte[] GetTitleId() => Encode("getTitleID");
+
+        /// <summary>
+        /// Requests the build ID of attached process.
+        /// </summary>
+        /// <returns>Encoded command bytes</returns>
+        public static byte[] GetBuildId() => Encode("getBuildID");
+
+        /// <summary>
+        /// Presses and releases a <see cref="SwitchButton"/> for 50ms.
+        /// </summary>
+        /// <remarks>Press &amp; Release timing is performed by the console automatically.</remarks>
+        /// <param name="button">Button to click.</param>
+        /// <returns>Encoded command bytes</returns>
+        public static byte[] Click(SwitchButton button) => Encode($"click {button}");
+
+        /// <summary>
+        /// Sets the specified <see cref="stick"/> to the desired <see cref="x"/> and <see cref="y"/> positions.
+        /// </summary>
+        /// <param name="stick">Stick to reset</param>
+        /// <param name="x">X position</param>
+        /// <param name="y">Y position</param>
+        /// <returns>Encoded command bytes</returns>
+        public static byte[] SetStick(SwitchStick stick, short x, short y) => Encode($"setStick {stick} {x} {y}");
+
+        /// <summary>
+        /// Resets the specified <see cref="stick"/> to (0,0)
+        /// </summary>
+        /// <param name="stick">Stick to reset</param>
+        /// <returns>Encoded command bytes</returns>
+        public static byte[] ResetStick(SwitchStick stick) => SetStick(stick, 0, 0);
 
         private static byte[] Encode(string command) => Encoding.UTF8.GetBytes(command + "\r\n");
     }
