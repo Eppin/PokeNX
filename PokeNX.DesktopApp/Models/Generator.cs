@@ -1,9 +1,8 @@
-﻿namespace PokeNX.DesktopApp.Models
+﻿namespace PokeNX.DesktopApp.Models;
+
+public enum Generator
 {
-    public enum Generator
-    {
-        Stationary,
-        Roamer,
-        Event
-    }
+    Stationary,
+    Roamer,
+    Event
 }

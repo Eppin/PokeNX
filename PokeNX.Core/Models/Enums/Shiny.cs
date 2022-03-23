@@ -1,9 +1,8 @@
-﻿namespace PokeNX.Core.Models.Enums
+﻿namespace PokeNX.Core.Models.Enums;
+
+public enum Shiny
 {
-    public enum Shiny
-    {
-        None = 0,
-        Star = 1,
-        Square = 2
-    }
+    None = 0,
+    Star = 1,
+    Square = 2
 }

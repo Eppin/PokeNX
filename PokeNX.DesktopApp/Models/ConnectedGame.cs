@@ -1,38 +1,37 @@
-﻿namespace PokeNX.DesktopApp.Models
+﻿namespace PokeNX.DesktopApp.Models;
+
+using Core.Models.Enums;
+using Utils;
+
+public class ConnectedGame
 {
-    using Core.Models.Enums;
-    using Utils;
+    public Game Game { get; set; } = Game.None;
 
-    public class ConnectedGame
+    public Version Version { get; set; } = Version.Unknown;
+
+    public uint TID { get; set; }
+
+    public uint SID { get; set; }
+
+    private bool _hasShinyCharm;
+    public bool HasShinyCharm
     {
-        public Game Game { get; set; } = Game.None;
-
-        public Version Version { get; set; } = Version.Unknown;
-
-        public uint TID { get; set; }
-
-        public uint SID { get; set; }
-
-        private bool _hasShinyCharm;
-        public bool HasShinyCharm
+        get => _hasShinyCharm;
+        set
         {
-            get => _hasShinyCharm;
-            set
-            {
-                _hasShinyCharm = value;
-                EventAggregator.PostMessage(new ProfileMessage(shinyCharm: value));
-            }
+            _hasShinyCharm = value;
+            EventAggregator.PostMessage(new ProfileMessage(shinyCharm: value));
         }
+    }
 
-        private bool _hasOvalCharm;
-        public bool HasOvalCharm
+    private bool _hasOvalCharm;
+    public bool HasOvalCharm
+    {
+        get => _hasOvalCharm;
+        set
         {
-            get => _hasOvalCharm;
-            set
-            {
-                _hasOvalCharm = value;
-                EventAggregator.PostMessage(new ProfileMessage(ovalCharm: value));
-            }
+            _hasOvalCharm = value;
+            EventAggregator.PostMessage(new ProfileMessage(ovalCharm: value));
         }
     }
 }

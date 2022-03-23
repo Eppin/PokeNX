@@ -1,10 +1,9 @@
-namespace PokeNX.DesktopApp.Models
+namespace PokeNX.DesktopApp.Models;
+
+public enum ParentGender
 {
-    public enum ParentGender
-    {
-        Male,
-        Female,
-        Genderless,
-        Ditto
-    }
+    Male,
+    Female,
+    Genderless,
+    Ditto
 }

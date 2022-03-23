@@ -1,22 +1,21 @@
-namespace PokeNX.DesktopApp.Views
+namespace PokeNX.DesktopApp.Views;
+
+using Avalonia;
+using Avalonia.Controls;
+using Avalonia.Markup.Xaml;
+
+public partial class MainWindow : Window
 {
-    using Avalonia;
-    using Avalonia.Controls;
-    using Avalonia.Markup.Xaml;
-
-    public partial class MainWindow : Window
+    public MainWindow()
     {
-        public MainWindow()
-        {
-            InitializeComponent();
+        InitializeComponent();
 #if DEBUG
-            this.AttachDevTools();
+        this.AttachDevTools();
 #endif
-        }
+    }
 
-        private void InitializeComponent()
-        {
-            AvaloniaXamlLoader.Load(this);
-        }
+    private void InitializeComponent()
+    {
+        AvaloniaXamlLoader.Load(this);
     }
 }
