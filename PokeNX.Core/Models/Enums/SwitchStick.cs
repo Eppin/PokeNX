@@ -1,8 +1,7 @@
-namespace PokeNX.Core.Models.Enums
+namespace PokeNX.Core.Models.Enums;
+
+public enum SwitchStick
 {
-    public enum SwitchStick
-    {
-        Left,
-        Right
-    }
+    Left,
+    Right
 }

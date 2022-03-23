@@ -1,11 +1,10 @@
-﻿namespace PokeNX.Core.Models
+﻿namespace PokeNX.Core.Models;
+
+public class Stationary8Request
 {
-    public class Stationary8Request
-    {
-        public uint GenderRatio { get; set; }
+    public uint GenderRatio { get; set; }
 
-        public bool SetIVs { get; set; }
+    public bool SetIVs { get; set; }
 
-        public Filter Filter { get; set; }
-    }
+    public Filter Filter { get; set; }
 }

@@ -1,23 +1,22 @@
-namespace PokeNX.Core.Models
+namespace PokeNX.Core.Models;
+
+using Enums;
+
+public class GameOffset
 {
-    using Enums;
+    public string BuildId { get; }
 
-    public class GameOffset
+    public Version Version { get; }
+
+    public uint PlayerPrefsProviderInstance { get; }
+
+    public string MainPointer { get; }
+
+    public GameOffset(string buildId, Version version, uint playerPrefsProviderInstance, string mainPointer)
     {
-        public string BuildId { get; }
-
-        public Version Version { get; }
-
-        public uint PlayerPrefsProviderInstance { get; }
-
-        public string MainPointer { get; }
-
-        public GameOffset(string buildId, Version version, uint playerPrefsProviderInstance, string mainPointer)
-        {
-            BuildId = buildId;
-            Version = version;
-            PlayerPrefsProviderInstance = playerPrefsProviderInstance;
-            MainPointer = mainPointer;
-        }
+        BuildId = buildId;
+        Version = version;
+        PlayerPrefsProviderInstance = playerPrefsProviderInstance;
+        MainPointer = mainPointer;
     }
 }

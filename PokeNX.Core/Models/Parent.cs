@@ -1,15 +1,14 @@
-namespace PokeNX.Core.Models
+namespace PokeNX.Core.Models;
+
+using Enums;
+
+public class Parent
 {
-    using Enums;
+    public byte Ability { get; set; }
 
-    public class Parent
-    {
-        public byte Ability { get; set; }
+    public Nature Nature { get; set; }
 
-        public Nature Nature { get; set; }
+    public EggHeldItem? HeldItem { get; set; }
 
-        public EggHeldItem? HeldItem { get; set; }
-
-        public byte[] IVs { get; set; } = new byte[6];
-    }
+    public byte[] IVs { get; set; } = new byte[6];
 }
