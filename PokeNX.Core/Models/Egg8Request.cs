@@ -1,7 +1,5 @@
 namespace PokeNX.Core.Models
 {
-    using Generators;
-
     public class Egg8Request
     {
         public ushort TrainerId { get; set; }

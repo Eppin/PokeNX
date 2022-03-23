@@ -7,15 +7,11 @@ namespace PokeNX.Core.Generators
     using RNG;
     using Gender = Models.Enums.Gender;
 
-    public class EggGenerator8
+    public class EggGenerator8 : Generator8
     {
-        private readonly uint _initialAdvances;
-        private readonly uint _maximumAdvances;
-
         public EggGenerator8(uint initialAdvances, uint maximumAdvances = 1_000)
+            : base(initialAdvances, maximumAdvances)
         {
-            _initialAdvances = initialAdvances;
-            _maximumAdvances = maximumAdvances;
         }
 
         public List<GenerateResult> Generate(ulong s0, ulong s1, Egg8Request request)
@@ -23,7 +19,7 @@ namespace PokeNX.Core.Generators
             var tsv = (uint)(request.TrainerId ^ request.SecretId);
 
             var rng = new XorShift(s0, s1);
-            rng.Advance(_initialAdvances);
+            rng.Advance(InitialAdvances);
 
             sbyte pidRolls = 0;
             if (request.IsMasuda)
@@ -33,7 +29,7 @@ namespace PokeNX.Core.Generators
 
             var results = new List<GenerateResult>();
 
-            for (uint advances = 0; advances < _maximumAdvances; advances++, rng.Next())
+            for (uint advances = 0; advances < MaximumAdvances; advances++, rng.Next())
             {
                 var check = new XorShift(rng);
 
@@ -172,15 +168,6 @@ namespace PokeNX.Core.Generators
                 shiny = Shiny.Star;
 
             return shiny;
-        }
-
-        private static bool Filter(Filter filter, GenerateResult result)
-        {
-            return filter.CompareShiny(result.Shiny) &&
-                   filter.CompareAbility(result.Ability) &&
-                   filter.CompareGender(result.Gender) &&
-                   filter.CompareNature(result.Nature) &&
-                   filter.CompareIVs(result.IVs);
         }
     }
 }

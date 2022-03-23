@@ -8,7 +8,7 @@ namespace PokeNX.DesktopApp.Utils
     public static class EventAggregator
     {
         private static readonly List<Delegate> Handlers = new();
-        private static readonly SynchronizationContext? SynchronizationContext;
+        private static readonly SynchronizationContext SynchronizationContext;
 
         static EventAggregator()
         {

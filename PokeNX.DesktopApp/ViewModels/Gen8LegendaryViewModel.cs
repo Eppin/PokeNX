@@ -1,5 +1,7 @@
 ﻿namespace PokeNX.DesktopApp.ViewModels
 {
+    using System;
+    using System.Collections.Generic;
     using System.Collections.ObjectModel;
     using System.Reactive;
     using Core;
@@ -18,7 +20,7 @@
 
         public ObservableCollection<GenerateTableResult> Results { get; set; } = new();
 
-        private uint _initialAdvances = 64;
+        private uint _initialAdvances;
         public uint InitialAdvances { get => _initialAdvances; set => this.RaiseAndSetIfChanged(ref _initialAdvances, value); }
 
         private uint _maximumAdvances = 10_000;
@@ -29,6 +31,23 @@
 
         private ulong _seed1;
         public ulong Seed1 { get => _seed1; set => this.RaiseAndSetIfChanged(ref _seed1, value); }
+
+        private int _generator;
+
+        public int Generator
+        {
+            get => _generator;
+            set
+            {
+                this.RaiseAndSetIfChanged(ref _generator, value);
+
+                InitialAdvances = GetInitialAdvances(value);
+
+                this.RaisePropertyChanged(nameof(Set3IVs));
+                this.RaisePropertyChanged(nameof(ShowAbility));
+                this.RaisePropertyChanged(nameof(ShowGender));
+            }
+        }
 
         private FilterStats _filterStats = new();
         public FilterStats FilterStats { get => _filterStats; set => this.RaiseAndSetIfChanged(ref _filterStats, value); }
@@ -45,6 +64,13 @@
         private int _advancesLeft;
         public int AdvancesLeft { get => _advancesLeft; set => this.RaiseAndSetIfChanged(ref _advancesLeft, value); }
 
+        private bool _isConnected;
+        public bool IsConnected
+        {
+            get => _isConnected;
+            set => this.RaiseAndSetIfChanged(ref _isConnected, value);
+        }
+
         private string _errorText = string.Empty;
         public string ErrorText
         {
@@ -59,7 +85,16 @@
         public bool HasError => !string.IsNullOrWhiteSpace(ErrorText);
 
         private bool _set3IVs = true;
-        public bool Set3IVs { get => _set3IVs; set => this.RaiseAndSetIfChanged(ref _set3IVs, value); }
+
+        public bool Set3IVs
+        {
+            get => KeyValues.Generators[Generator].Key == Models.Generator.Event || _set3IVs;
+            set => this.RaiseAndSetIfChanged(ref _set3IVs, value);
+        }
+
+        public bool ShowAbility => KeyValues.Generators[Generator].Key != Models.Generator.Event;
+
+        public bool ShowGender => KeyValues.Generators[Generator].Key != Models.Generator.Event;
 
         #endregion
 
@@ -73,8 +108,15 @@
                 Seed1 = message.Seed1;
             });
 
+            EventAggregator.RegisterHandler<ConnectionMessage>(message =>
+            {
+                IsConnected = message.IsConnected;
+            });
+
             OnGenerateCommand = ReactiveCommand.Create(GenerateExecute);
             OnEncounterDetailsCommand = ReactiveCommand.Create(EncounterDetailsExecute);
+
+            InitialAdvances = GetInitialAdvances(Generator);
         }
 
         public ReactiveCommand<Unit, Unit> OnGenerateCommand { get; }
@@ -83,19 +125,43 @@
 
         private void EncounterDetailsExecute()
         {
-            //var roamers = _diamondPearlService.GetRoamers();
+            var wild = _diamondPearlService.GetWild();
 
-            var (ec, pid) = _diamondPearlService.GetWild();
-
-            EncounterEC = ec;
-            EncounterPID = pid;
+            EncounterEC = wild.EC;
+            EncounterPID = wild.PID;
         }
 
         private void GenerateExecute()
         {
+            if (Seed0 + Seed1 == 0)
+            {
+                ErrorText = "S0 and S1 cannot be 0!";
+
+                return;
+            }
+
+            // Clear on success!
+            ErrorText = string.Empty;
+
             var natureFilter = KeyValues.NaturesFilter[FilterStats.Nature].Key;
             var genderRatio = KeyValues.GenderRatio[FilterStats.GenderRatio].Key;
 
+            var results = KeyValues.Generators[Generator].Key switch
+            {
+                Models.Generator.Stationary => StationaryGenerator(natureFilter, genderRatio),
+                Models.Generator.Roamer => RoamerGenerator(natureFilter),
+                Models.Generator.Event => EventGenerator(natureFilter),
+                _ => throw new ArgumentOutOfRangeException()
+            };
+
+            Results.Clear();
+
+            foreach (var eggResult in results)
+                Results.Add(new GenerateTableResult(eggResult));
+        }
+
+        private List<GenerateResult> StationaryGenerator(NatureFilter natureFilter, uint genderRatio)
+        {
             var request = new Stationary8Request
             {
                 GenderRatio = genderRatio,
@@ -119,24 +185,72 @@
                 SetIVs = Set3IVs
             };
 
-            var stationaryGenerator8 = new StationaryGenerator8(InitialAdvances, MaximumAdvances);
+            return new StationaryGenerator8(InitialAdvances, MaximumAdvances)
+                .Generate(Seed0, Seed1, request);
+        }
 
-            if (Seed0 + Seed1 == 0)
+        private List<GenerateResult> RoamerGenerator(NatureFilter natureFilter)
+        {
+            var request = new Roamer8Request
             {
-                ErrorText = "S0 and S1 cannot be 0!";
+                Filter = new Filter
+                {
+                    Gender = FilterStats.Gender switch
+                    {
+                        0 => GenderFilter.Any,
+                        _ => (GenderFilter)FilterStats.Gender - 1
+                    },
+                    Natures = new[] { natureFilter },
+                    Ability = FilterStats.Ability switch
+                    {
+                        0 => AbilityFilter.Any,
+                        _ => (AbilityFilter)FilterStats.Ability - 1
+                    },
+                    MinIVs = FilterStats.MinimumValues,
+                    MaxIVs = FilterStats.MaximumValues,
+                    Shiny = KeyValues.Shinies[FilterStats.Shiny].Key
+                }
+            };
 
-                return;
-            }
+            return new RoamerGenerator8(InitialAdvances, MaximumAdvances)
+                .Generate(Seed0, Seed1, request);
+        }
 
-            // Clear on success!
-            ErrorText = string.Empty;
+        private List<GenerateResult> EventGenerator(NatureFilter natureFilter)
+        {
+            var request = new Event8Request
+            {
+                Filter = new Filter
+                {
+                    Gender = FilterStats.Gender switch
+                    {
+                        0 => GenderFilter.Any,
+                        _ => (GenderFilter)FilterStats.Gender - 1
+                    },
+                    Natures = new[] { natureFilter },
+                    Ability = FilterStats.Ability switch
+                    {
+                        0 => AbilityFilter.Any,
+                        _ => (AbilityFilter)FilterStats.Ability - 1
+                    },
+                    MinIVs = FilterStats.MinimumValues,
+                    MaxIVs = FilterStats.MaximumValues,
+                    Shiny = KeyValues.Shinies[FilterStats.Shiny].Key
+                }
+            };
 
-            var results = stationaryGenerator8.Generate(Seed0, Seed1, request);
+            return new EventGenerator8(InitialAdvances, MaximumAdvances)
+                .Generate(Seed0, Seed1, request);
+        }
 
-            Results.Clear();
-
-            foreach (var eggResult in results)
-                Results.Add(new GenerateTableResult(eggResult));
+        private static uint GetInitialAdvances(int value)
+        {
+            return KeyValues.Generators[value].Key switch
+            {
+                Models.Generator.Roamer => 104,
+                Models.Generator.Stationary => 84,
+                _ => 0
+            };
         }
     }
 }

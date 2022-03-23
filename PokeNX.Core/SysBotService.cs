@@ -4,6 +4,7 @@
     using System.Net.Sockets;
     using System.Text;
     using System.Threading;
+    using System.Threading.Tasks;
     using Extensions;
     using Models.Enums;
     using Utils;
@@ -44,9 +45,16 @@
             }
         }
 
-        public string GetTitleID()
+        public string GetTitleId()
         {
-            var bytes = ReadRaw(SwitchCommand.GetTitleID(), 17);
+            var bytes = ReadRaw(SwitchCommand.GetTitleId(), 17);
+
+            return Encoding.ASCII.GetString(bytes).Trim();
+        }
+
+        public string GetBuildId()
+        {
+            var bytes = ReadRaw(SwitchCommand.GetBuildId(), 17);
 
             return Encoding.ASCII.GetString(bytes).Trim();
         }
@@ -74,7 +82,7 @@
         {
             var bytesReceived = _connection.Receive(buffer, 0, 1, SocketFlags.None);
 
-            while (buffer[bytesReceived - 1] != (byte)'\n')
+            while (buffer[bytesReceived - 1] != (byte) '\n')
                 bytesReceived += _connection.Receive(buffer, bytesReceived, 1, SocketFlags.None);
 
             return bytesReceived;
@@ -109,5 +117,28 @@
                 return buffer;
             }
         }
+
+        protected async Task Click(SwitchButton button, int delay, CancellationToken token = default)
+        {
+            lock (_lock)
+            {
+                _connection.Send(SwitchCommand.Click(button));
+            }
+
+            await Task.Delay(delay, token).ConfigureAwait(false);
+        }
+
+
+        protected async Task SetStick(SwitchStick stick, short x, short y, int delay, CancellationToken token = default)
+        {
+            lock (_lock)
+            {
+                _connection.Send(SwitchCommand.SetStick(stick, x, y));
+            }
+
+            await Task.Delay(delay, token).ConfigureAwait(false);
+        }
+
+        protected Task ResetStick(SwitchStick stick, int delay, CancellationToken token = default) => SetStick(stick, 0, 0, delay, token);
     }
 }

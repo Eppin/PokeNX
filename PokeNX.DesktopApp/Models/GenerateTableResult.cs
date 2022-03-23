@@ -11,6 +11,8 @@
             Seed = generateResult.Seed;
             PID = generateResult.PID;
             EC = generateResult.EC;
+            EncounterSlot = generateResult.EncounterSlot;
+            HeldItem = generateResult.HeldItem;
             Shiny = generateResult.Shiny;
             Nature = generateResult.Nature;
             Ability = generateResult.Ability;
@@ -23,6 +25,6 @@
             Speed = generateResult.Speed;
         }
 
-        public IBrush? RowColor => Shiny > 0 ? new SolidColorBrush(Color.FromRgb(144, 0, 0)) : null;
+        public IBrush RowColor => Shiny > 0 ? new SolidColorBrush(Color.FromRgb(144, 0, 0)) : null;
     }
 }

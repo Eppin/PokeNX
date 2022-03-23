@@ -1,44 +1,11 @@
 namespace PokeNX.Core.Extensions
 {
     using System;
-    using System.Collections;
-    using System.Collections.Generic;
-    using System.Globalization;
-    using System.Linq;
 
     public static class ByteExtensions
     {
-        private static bool IsNum(char c) => (uint) (c - '0') <= 9;
-        private static bool IsHexUpper(char c) => (uint) (c - 'A') <= 5;
-
-        // public static string ToHexString(this byte[] bytes)
-        // {
-        //     return BitConverter
-        //         .ToString(bytes)
-        //         .Replace("-", "");
-        // }
-        
-        public static string ToHexString(this IEnumerable<byte> bytes)
-        {
-            return BitConverter
-                .ToString(bytes.ToArray())
-                .Replace("-", "");
-        }
-
-        // public static ulong ToUlong(this byte[] bytes)
-        // {
-        //     return ulong.Parse(bytes.ToHexString(), NumberStyles.HexNumber);
-        // }
-        
-        public static ulong ToUlong(this IEnumerable<byte> bytes)
-        {
-            return ulong.Parse(bytes.ToHexString(), NumberStyles.HexNumber);
-        }
-        
-        public static ushort ToUshort(this IEnumerable<byte> bytes)
-        {
-            return ushort.Parse(bytes.ToHexString(), NumberStyles.HexNumber);
-        }
+        private static bool IsNum(char c) => (uint)(c - '0') <= 9;
+        private static bool IsHexUpper(char c) => (uint)(c - 'A') <= 5;
 
         public static byte[] ConvertHexBytes(this byte[] bytes)
         {
