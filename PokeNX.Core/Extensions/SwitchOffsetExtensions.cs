@@ -1,17 +1,16 @@
-namespace PokeNX.Core.Extensions
-{
-    using System;
-    using Models.Enums;
-    using Utils;
+namespace PokeNX.Core.Extensions;
 
-    public static class SwitchOffsetExtensions
+using System;
+using Models.Enums;
+using Utils;
+
+public static class SwitchOffsetExtensions
+{
+    public static Func<ulong, int, byte[]> GetReadMethod(this SwitchOffset type) => type switch
     {
-        public static Func<ulong, int, byte[]> GetReadMethod(this SwitchOffset type) => type switch
-        {
-            SwitchOffset.Heap => (offset, size) => SwitchCommand.Peek((uint)offset, size),
-            SwitchOffset.Main => SwitchCommand.PeekMain,
-            SwitchOffset.Absolute => SwitchCommand.PeekAbsolute,
-            _ => throw new IndexOutOfRangeException("Invalid offset type"),
-        };
-    }
+        SwitchOffset.Heap => (offset, size) => SwitchCommand.Peek((uint)offset, size),
+        SwitchOffset.Main => SwitchCommand.PeekMain,
+        SwitchOffset.Absolute => SwitchCommand.PeekAbsolute,
+        _ => throw new IndexOutOfRangeException("Invalid offset type"),
+    };
 }

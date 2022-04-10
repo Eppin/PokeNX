@@ -1,9 +1,8 @@
-﻿namespace PokeNX.Core.Models.Enums
+﻿namespace PokeNX.Core.Models.Enums;
+
+public enum Gender : byte
 {
-    public enum Gender : byte
-    {
-        Male = 0,
-        Female = 1,
-        Genderless = 2,
-    }
+    Male = 0,
+    Female = 1,
+    Genderless = 2,
 }

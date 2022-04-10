@@ -1,131 +1,202 @@
-namespace PokeNX.Core
+namespace PokeNX.Core;
+
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Net;
+using System.Threading;
+using Models;
+using Models.Enums;
+using PKHeX.Core;
+using RNG;
+using static Models.Enums.Game;
+using static Models.Enums.Version;
+using static Utils.DiamondPearlOffsets;
+using Ability = Models.Enums.Ability;
+using Nature = Models.Enums.Nature;
+using Version = Models.Enums.Version;
+
+public class DiamondPearlService : SysBotService
 {
-    using System;
-    using System.IO;
-    using System.Linq;
-    using System.Net;
-    using Extensions;
-    using Models;
-    using Models.Enums;
-    using static Models.Enums.Game;
-    using static Utils.DiamondPearlOffsets;
+    private GameOffset _gameOffset;
+    private uint _mainAdvances;
 
-    public class DiamondPearlService : SysBotService
+    public Game Game { get; private set; } = None;
+
+    public Version Version { get; private set; } = Unknown;
+
+    public void Connect(string ipAddress, int port)
     {
-        public Game Game { get; private set; } = None;
+        if (Connected)
+            return;
 
-        public void Connect(string ipAddress, int port)
+        Connect(IPAddress.Parse(ipAddress), port);
+
+        var titleId = GetTitleId();
+        var buildId = GetBuildId();
+
+        (Game, _gameOffset) = GetGameOffset(titleId, buildId);
+        Version = _gameOffset.Version;
+    }
+
+    public void CalulateMainRNG(Action<ulong, ulong, uint> callback, CancellationToken cts)
+    {
+        ulong seed0 = 0;
+        ulong seed1 = 0;
+
+        var (s0, s1) = MainRNG();
+        var rng = new XorShift(s0, s1);
+
+        var (tmpS0, tmpS1) = rng.Seed();
+
+        while (true)
         {
-            if (Connected)
+            if (cts.IsCancellationRequested)
                 return;
 
-            Connect(IPAddress.Parse(ipAddress), port);
+            var (ramS0, ramS1) = MainRNG();
 
-            var titleId = GetTitleID();
-            Game = titleId switch
+            while (ramS0 != tmpS0 || ramS1 != tmpS1)
             {
-                BrilliantDiamondID => BrilliantDiamond,
-                ShiningPearlID => ShiningPearl,
-                _ => throw new ArgumentOutOfRangeException(nameof(titleId), titleId, $"Only compatible with {nameof(BrilliantDiamond)} or {nameof(ShiningPearl)}")
-            };
+                if (cts.IsCancellationRequested)
+                    return;
+
+                rng.Next();
+                (tmpS0, tmpS1) = rng.Seed();
+                _mainAdvances++;
+
+                if (ramS0 == tmpS0 && ramS1 == tmpS1)
+                {
+                    seed0 = ramS0;
+                    seed1 = ramS1;
+                }
+
+                callback(seed0, seed1, _mainAdvances);
+            }
         }
+    }
 
-        public void TestBoxPointer()
+    public void ResetAdvances() => _mainAdvances = 0;
+
+    private (ulong S0, ulong S1) MainRNG()
+    {
+        const int size = sizeof(ulong) * 2;
+        var tmpInitialState = ReadPointer(_gameOffset.MainPointer, size);
+
+        var s0 = BitConverter.ToUInt64(tmpInitialState, 0);
+        var s1 = BitConverter.ToUInt64(tmpInitialState, 8);
+
+        return (s0, s1);
+    }
+
+    public (ushort TID, ushort SID) GetTrainerInfo()
+    {
+        var baseAddress = GetPlayerPrefsProvider();
+
+        var trainerInfoBytes = ReadBytesAbsolute(baseAddress + 0xe8, sizeof(uint));
+        var trainerInfo = BitConverter.ToUInt32(trainerInfoBytes);
+
+        var sid = (ushort)(trainerInfo >> 16);
+        var tid = (ushort)trainerInfo;
+
+        return (tid, sid);
+    }
+
+    public EggDetails GetDayCareDetails()
+    {
+        var baseAddress = GetDayCareAddress();
+
+        var eggSeedBytes = ReadBytesAbsolute(baseAddress, sizeof(ulong))
+            .Take(sizeof(uint))
+            .ToArray();
+
+        var eggSeed = BitConverter.ToUInt32(eggSeedBytes);
+
+        var eggStepCount = BitConverter.ToUInt16(ReadBytesAbsolute(baseAddress + 0x8, sizeof(ulong)));
+
+        return new EggDetails
         {
+            Exists = eggSeed > 0,
+            Seed = eggSeed,
+            StepCount = eggStepCount
+        };
+    }
 
+    public Wild GetWild()
+    {
+        var tmp = GetBattleSetupAddress();
 
+        var addresses = new ulong[] { 0x58, 0x28, 0x10, 0x20, 0x20, 0x18 };
+        tmp = addresses.Aggregate(tmp, (current, addition) => BitConverter.ToUInt64(ReadBytesAbsolute(current + addition, sizeof(ulong))));
 
+        var result = ReadBytesAbsolute(tmp + 0x20, 0x148);
 
-            //var boxStartOffset = ReadPointer(DiamondBoxStartPointer, sizeof(ulong)).Reverse().ToUlong();
-            var b1s1 = ReadBytesAbsolute(TestBox1S1Address(), 0x158);
-            File.WriteAllBytes(@"C:\Users\Kevin\Desktop\test.pb8", b1s1);
-        }
+        var pk = new PK8(result);
 
-        private ulong TestBox1S1Address()
+        var ivs = new[]
         {
-            const int size = sizeof(ulong);
+            pk.IVs[0],
+            pk.IVs[1],
+            pk.IVs[2],
+            pk.IVs[4],
+            pk.IVs[5],
+            pk.IVs[3]
+        };
 
-            var tmp = ReadPointer(DiamondBoxStartPointer, size).Reverse().ToUlong();
+        return new Wild(pk.Species, pk.EncryptionConstant, pk.PID, (Nature)pk.Nature, (Ability)pk.AbilityNumber, ivs);
+    }
 
-            var addresses = new ulong[] { 0xB8, 0x10, 0xA0, 0x20, 0x20, 0x20 };
-            return addresses.Aggregate(tmp, (current, addition) => ReadBytesAbsolute(current + addition, size).Reverse().ToUlong());
-        }
+    public IEnumerable<(Roamer Roamer, ulong Seed)> GetRoamers()
+    {
+        var roamersList = BitConverter.ToUInt64(ReadBytesAbsolute(GetPlayerPrefsProvider() + 0x2a0, sizeof(ulong)));
+        var readSize = BitConverter.ToUInt32(ReadBytesAbsolute(roamersList + 0x18, sizeof(uint)));
 
-        public (ulong S0, ulong S1) MainRNG()
+        var size = Math.Min(readSize, 10);
+
+        for (ulong i = 0; i < size; i++)
         {
-            const int size = sizeof(ulong) * 2;
-            var tmpInitialState = ReadPointer(MainPointer, size);
+            var roamer = ReadBytesAbsolute(roamersList + 0x20 + (0x20 * i), 0x20);
 
-            var half = tmpInitialState.Length / 2;
-
-            // First half is S0
-            var s0 = tmpInitialState
-                .Take(half)
-                .Reverse()
-                .ToUlong();
-
-            // Second half is S1
-            var s1 = tmpInitialState
-                .Skip(half)
-                .Reverse()
-                .ToUlong();
-
-            return (s0, s1);
-        }
-
-        public (ushort TID, ushort SID) GetTrainerInfo()
-        {
-            var baseAddress = GetPlayerPrefsProvider();
-
-            //var trainerInfo = ReadBytesAbsolute(baseAddress + 0xe8, sizeof(uint));
-            var trainerInfo = ReadBytesAbsolute(baseAddress + 0xe8, sizeof(long))
-                .Reverse()
-                .ToUlong();
-
-            var tid = (ushort)(trainerInfo >> 16);
-            var sid = (ushort)trainerInfo;
-
-            return (tid, sid);
-        }
-
-        public EggDetails GetDayCareDetails()
-        {
-            var baseAddress = GetDayCareAddress();
-
-            var eggSeed = ReadBytesAbsolute(baseAddress, sizeof(long))
-                .Take(sizeof(int)) // Is this correct?
-                .Reverse()
-                .ToUlong();
-
-            var eggStepCount = ReadBytesAbsolute(baseAddress + 0x8, sizeof(long))
-                .Reverse()
-                .ToUshort();
-
-            return new EggDetails
+            var indexes = new[,]
             {
-                Exists = eggSeed > 0,
-                Seed = eggSeed,
-                StepCount = eggStepCount
-            };
-        }
-
-        private ulong GetDayCareAddress() => GetPlayerPrefsProvider() + 0x460;
-
-        private ulong GetPlayerPrefsProvider()
-        {
-            const int size = sizeof(ulong);
-
-            var offset = Game switch
-            {
-                BrilliantDiamond => DiamondPlayerPrefsProviderInstance,
-                ShiningPearl => PearlPlayerPrefsProviderInstance,
-                _ => throw new ArgumentOutOfRangeException(nameof(Game), Game, $"Only compatible with {nameof(BrilliantDiamond)} or {nameof(ShiningPearl)}")
+                { 0, 4 }, // Area ID
+                { 4, 8 }, // RNG Seed
+                { 12, 4 }, // Species
+                { 16, 4 }, // HP
+                { 20, 1 } // Level
             };
 
-            var tmp = ReadBytesMain(offset, size).Reverse().ToUlong();
+            //var areaIdBytes = roamer.Skip(indexes[0, 0]).Take(indexes[0, 1]).ToArray();
+            var seedBytes = roamer.Skip(indexes[1, 0]).Take(indexes[1, 1]).ToArray();
+            var speciesBytes = roamer.Skip(indexes[2, 0]).Take(indexes[2, 1]).ToArray();
+            //var hpBytes = roamer.Skip(indexes[3, 0]).Take(indexes[3, 1]).ToArray();
+            //var levelBytes = roamer.Skip(indexes[4, 0]).Take(indexes[4, 1]).ToArray();
 
-            var addresses = new ulong[] { 0x18, 0xc0, 0x28, 0xb8, 0 };
-            return addresses.Aggregate(tmp, (current, addition) => ReadBytesAbsolute(current + addition, size).Reverse().ToUlong());
+            var seed = BitConverter.ToUInt64(seedBytes);
+            var species = (Roamer)BitConverter.ToUInt32(speciesBytes);
+
+            yield return (species, seed);
         }
+    }
+
+    private ulong GetDayCareAddress() => GetPlayerPrefsProvider() + 0x460;
+
+    private ulong GetBattleSetupAddress()
+    {
+        var offset = _gameOffset.Version == V130
+            ? (ulong)0x800
+            : (ulong)0xF0;
+
+        return BitConverter.ToUInt64(ReadBytesAbsolute(GetPlayerPrefsProvider() + offset, sizeof(ulong)));
+    }
+
+    private ulong GetPlayerPrefsProvider()
+    {
+        const int size = sizeof(ulong);
+
+        var tmp = BitConverter.ToUInt64(ReadBytesMain(_gameOffset.PlayerPrefsProviderInstance, size));
+
+        var addresses = new ulong[] { 0x18, 0xc0, 0x28, 0xb8, 0 };
+        return addresses.Aggregate(tmp, (current, addition) => BitConverter.ToUInt64(ReadBytesAbsolute(current + addition, size)));
     }
 }

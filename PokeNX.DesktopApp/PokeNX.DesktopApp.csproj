@@ -1,27 +1,23 @@
 <Project Sdk="Microsoft.NET.Sdk">
-  <PropertyGroup>
-    <OutputType>WinExe</OutputType>
-    <TargetFramework>net5.0</TargetFramework>
-    <Nullable>enable</Nullable>
-  </PropertyGroup>
-  <ItemGroup>
-    <AvaloniaResource Include="Assets\**" />
-    <None Remove=".gitignore" />
-  </ItemGroup>
-  <ItemGroup>
-    <PackageReference Include="Avalonia" Version="0.10.10" />
-    <PackageReference Include="Avalonia.Controls.DataGrid" Version="0.10.10" />
-    <PackageReference Include="Avalonia.Desktop" Version="0.10.10" />
-    <!--Condition below is needed to remove Avalonia.Diagnostics package from build output in Release configuration.-->
-    <PackageReference Condition="'$(Configuration)' == 'Debug'" Include="Avalonia.Diagnostics" Version="0.10.10" />
-    <PackageReference Include="Avalonia.ReactiveUI" Version="0.10.10" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\PokeNX.Core\PokeNX.Core.csproj" />
-  </ItemGroup>
-  <ItemGroup>
-    <Compile Update="Controls\StatRange.axaml.cs">
-      <DependentUpon>StatRange.axaml</DependentUpon>
-    </Compile>
-  </ItemGroup>
+	<PropertyGroup>
+		<OutputType>WinExe</OutputType>
+		<TargetFramework>net6.0</TargetFramework>
+		<Nullable>warnings</Nullable>
+		<ImplicitUsings>enable</ImplicitUsings>
+	</PropertyGroup>
+	<ItemGroup>
+		<AvaloniaResource Include="Assets\**" />
+		<None Remove=".gitignore" />
+	</ItemGroup>
+	<ItemGroup>
+		<PackageReference Include="Avalonia" Version="0.10.13" />
+		<PackageReference Include="Avalonia.Controls.DataGrid" Version="0.10.13" />
+		<PackageReference Include="Avalonia.Desktop" Version="0.10.13" />
+		<!--Condition below is needed to remove Avalonia.Diagnostics package from build output in Release configuration.-->
+		<PackageReference Condition="'$(Configuration)' == 'Debug'" Include="Avalonia.Diagnostics" Version="0.10.13" />
+		<PackageReference Include="Avalonia.ReactiveUI" Version="0.10.13" />
+	</ItemGroup>
+	<ItemGroup>
+		<ProjectReference Include="..\PokeNX.Core\PokeNX.Core.csproj" />
+	</ItemGroup>
 </Project>

@@ -1,9 +1,8 @@
-﻿namespace PokeNX.Core.Models.Enums
+﻿namespace PokeNX.Core.Models.Enums;
+
+public enum Ability : byte
 {
-    public enum Ability : byte
-    {
-        _0 = 0,
-        _1 = 1,
-        Hidden = 2
-    }
+    _0 = 0,
+    _1 = 1,
+    Hidden = 2
 }
