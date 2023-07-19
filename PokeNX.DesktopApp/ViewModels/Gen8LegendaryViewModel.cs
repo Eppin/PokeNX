@@ -129,6 +129,10 @@ public class Gen8LegendaryViewModel : ViewModelBase
 
         EncounterEC = wild.EC;
         EncounterPID = wild.PID;
+
+        var result = Results.Where(x => x.EC == wild.EC).ToList();
+        var c = result.Count;
+        var w = result.FirstOrDefault();
     }
 
     private void GenerateExecute()

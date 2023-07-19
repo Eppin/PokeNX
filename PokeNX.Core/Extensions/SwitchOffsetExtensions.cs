@@ -13,4 +13,13 @@ public static class SwitchOffsetExtensions
         SwitchOffset.Absolute => SwitchCommand.PeekAbsolute,
         _ => throw new IndexOutOfRangeException("Invalid offset type"),
     };
+
+    public static Func<ulong, byte[], byte[]> GetWriteMethod(this SwitchOffset type) => type switch
+    {
+        SwitchOffset.Heap => (offset, bytes) => SwitchCommand.Poke((uint)offset, bytes),
+        SwitchOffset.Main => (offset, bytes) => SwitchCommand.PokeMain(offset, bytes),
+        SwitchOffset.Absolute => (offset, bytes) => SwitchCommand.PokeAbsolute(offset, bytes),
+        _ => throw new IndexOutOfRangeException("Invalid offset type."),
+    };
+
 }

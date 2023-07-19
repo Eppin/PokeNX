@@ -124,6 +124,22 @@ public class DiamondPearlService : SysBotService
 
     public Wild GetWild()
     {
+        WriteBytesMain(0x1788804, BitConverter.GetBytes(0xd503201f));
+        WriteBytesMain(0x1d56d00, BitConverter.GetBytes(0xd503201f));
+        WriteBytesMain(0x1d56d58, BitConverter.GetBytes(0xd503201f));
+        WriteBytesMain(0x1d57c6c, BitConverter.GetBytes(0xd503201f));
+        WriteBytesMain(0x1d57b94, BitConverter.GetBytes(0xd503201f));
+        WriteBytesMain(0x1dae130, BitConverter.GetBytes(0xd503201f));
+        WriteBytesMain(0x1998c1c, BitConverter.GetBytes(0xd503201f));
+        WriteBytesMain(0x1d56b68, BitConverter.GetBytes(0xd503201f));
+        WriteBytesMain(0x1dae1a4, BitConverter.GetBytes(0xd503201f));
+
+        WriteBytesMain(0x1db8b7c, BitConverter.GetBytes(0xd503201f));
+        WriteBytesMain(0x17d11a0, BitConverter.GetBytes(0xd503201f));
+        WriteBytesMain(0x17d11d8, BitConverter.GetBytes(0xd503201f));
+        WriteBytesMain(0x17d1210, BitConverter.GetBytes(0xd503201f));
+        WriteBytesMain(0x17d1240, BitConverter.GetBytes(0xd503201f));
+        //
         var tmp = GetBattleSetupAddress();
 
         var addresses = new ulong[] { 0x58, 0x28, 0x10, 0x20, 0x20, 0x18 };
