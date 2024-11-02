@@ -2,15 +2,15 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-             xmlns:views="clr-namespace:PokeNX.DesktopApp.Views"
              xmlns:desktopApp="clr-namespace:PokeNX.DesktopApp"
              xmlns:controls="clr-namespace:PokeNX.DesktopApp.Controls"
-             mc:Ignorable="d" d:DesignWidth="1400" d:DesignHeight="580"
+             xmlns:converters="clr-namespace:PokeNX.DesktopApp.Converters"
+             mc:Ignorable="d" d:DesignWidth="1400" d:DesignHeight="600"
              d:DataContext="{x:Static desktopApp:DesignData.Gen8EggsViewModel}"
              x:Class="PokeNX.DesktopApp.Views.Gen8Eggs">
 
     <UserControl.Resources>
-        <views:HexConverter x:Key="HexConverter" />
+        <converters:HexConverter x:Key="HexConverter" />
     </UserControl.Resources>
 
     <Grid ColumnDefinitions="*,*,*,*" RowDefinitions="Auto,Auto,*">
@@ -32,7 +32,7 @@
                 <TextBlock>Compatibility</TextBlock>
                 <ComboBox HorizontalAlignment="Stretch" Items="{Binding Compatibilities}" SelectedIndex="{Binding Compatibility}"/>
                 <Separator BorderBrush="DarkGray" BorderThickness="0.4"/>
-                <Button Click="Button_OnClick" Content="Generate" HorizontalAlignment="Stretch" HorizontalContentAlignment="Center"/>
+                <Button Command="{Binding OnGenerateCommand}" Content="Generate" HorizontalAlignment="Stretch" HorizontalContentAlignment="Center"/>
             </StackPanel>
         </Border>
 
@@ -93,68 +93,13 @@
         </Border>
 
         <Border Grid.Column="2" Grid.Row="0" BorderBrush="DarkGray" BorderThickness="1" CornerRadius="5" Margin="2 0 2 4">
-            <StackPanel Margin="10" Spacing="10">
-                <Grid ColumnDefinitions="0.2*,*" RowDefinitions="*,*,*,*,*,*">
-                    <Grid.Styles>
-                        <Style Selector="NumericUpDown">
-                            <Setter Property="Margin" Value="2" />
-                        </Style>
-                    </Grid.Styles>
-
-					<TextBlock Grid.Column="0" Grid.Row="0" Text="HP" VerticalAlignment="Center"/>
-                    <controls:StatRange Grid.Column="1" Grid.Row="0" MinValue="{Binding FilterStats.HP.Minimum}" MaxValue="{Binding FilterStats.HP.Maximum}"/>
-
-                    <TextBlock Grid.Column="0" Grid.Row="1" Text="Atk" VerticalAlignment="Center"/>
-                    <controls:StatRange Grid.Column="1" Grid.Row="1" MinValue="{Binding FilterStats.Atk.Minimum}" MaxValue="{Binding FilterStats.Atk.Maximum}"/>
-
-                    <TextBlock Grid.Column="0" Grid.Row="2" Text="Def" VerticalAlignment="Center"/>
-                    <controls:StatRange Grid.Column="1" Grid.Row="2" MinValue="{Binding FilterStats.Def.Minimum}" MaxValue="{Binding FilterStats.Def.Maximum}"/>
-
-                    <TextBlock Grid.Column="0" Grid.Row="3" Text="SpA" VerticalAlignment="Center"/>
-                    <controls:StatRange Grid.Column="1" Grid.Row="3" MinValue="{Binding FilterStats.SpA.Minimum}" MaxValue="{Binding FilterStats.SpA.Maximum}"/>
-
-                    <TextBlock Grid.Column="0" Grid.Row="4" Text="SpD" VerticalAlignment="Center"/>
-                    <controls:StatRange Grid.Column="1" Grid.Row="4" MinValue="{Binding FilterStats.SpD.Minimum}" MaxValue="{Binding FilterStats.SpD.Maximum}"/>
-
-                    <TextBlock Grid.Column="0" Grid.Row="5" Text="Spe" VerticalAlignment="Center"/>
-                    <controls:StatRange Grid.Column="1" Grid.Row="5" MinValue="{Binding FilterStats.Speed.Minimum}" MaxValue="{Binding FilterStats.Speed.Maximum}"/>
-                </Grid>
-
-                <Separator BorderBrush="DarkGray" BorderThickness="0.4"/>
-
-                <StackPanel Spacing="10">
-                    <StackPanel Orientation="Horizontal">
-                        <TextBlock MinWidth="100" VerticalAlignment="Center">Gender Ratio</TextBlock>
-                        <ComboBox Width="200" Items="{Binding GendersRatioFilter}" SelectedIndex="{Binding FilterStats.GenderRatio}"/>
-                    </StackPanel>
-                    <Separator BorderBrush="DarkGray" BorderThickness="0.4"/>
-                    <StackPanel Orientation="Horizontal">
-                        <TextBlock MinWidth="100" VerticalAlignment="Center">Gender</TextBlock>
-                        <ComboBox Width="200" Items="{Binding GendersFilter}" SelectedIndex="{Binding FilterStats.Gender}"/>
-                    </StackPanel>
-                    <Separator BorderBrush="DarkGray" BorderThickness="0.4"/>
-                    <StackPanel Orientation="Horizontal">
-                        <TextBlock MinWidth="100" VerticalAlignment="Center">Ability</TextBlock>
-                        <ComboBox Width="200" Items="{Binding AbilitiesFilter}" SelectedIndex="{Binding FilterStats.Ability}"/>
-                    </StackPanel>
-                    <Separator BorderBrush="DarkGray" BorderThickness="0.4"/>
-                    <StackPanel Orientation="Horizontal">
-                        <TextBlock MinWidth="100" VerticalAlignment="Center">Nature</TextBlock>
-                        <ComboBox Width="200" Items="{Binding NaturesFilter}" SelectedIndex="{Binding FilterStats.Nature}"/>
-                    </StackPanel>
-                    <Separator BorderBrush="DarkGray" BorderThickness="0.4"/>
-                    <StackPanel Orientation="Horizontal">
-                        <TextBlock MinWidth="100" VerticalAlignment="Center">Shiny</TextBlock>
-                        <ComboBox Width="200" Items="{Binding Shinies}" SelectedIndex="{Binding FilterStats.Shiny}"/>
-                    </StackPanel>
-                </StackPanel>
-            </StackPanel>
+            <controls:ResultsFilter FilterStats="{Binding FilterStats}" Margin="10"/>
         </Border>
 
         <Border Grid.Column="3" Grid.Row="0" BorderBrush="DarkGray" BorderThickness="1" CornerRadius="5" Margin="2 0 0 4">
             <StackPanel Margin="10" Spacing="10">
                 <TextBlock>Egg Seed</TextBlock>
-                <TextBox Text="{Binding EggSeed, Mode=OneWay, Converter={StaticResource HexConverter}}" IsEnabled="False"/>
+                <TextBox Text="{Binding EggSeed, Mode=OneWay, StringFormat={}{0:X8}, Mode=OneWay}" IsEnabled="False"/>
                 <Separator BorderBrush="DarkGray" BorderThickness="0.4"/>
                 <TextBlock>Step Count</TextBlock>
                 <TextBox Text="{Binding StepCount, Mode=OneWay}" IsEnabled="False"/>
@@ -165,74 +110,15 @@
                 <TextBlock>Advances Left</TextBlock>
                 <TextBox Text="{Binding AdvancesLeft, Mode=TwoWay}" IsEnabled="False"/>
                 <Separator BorderBrush="DarkGray" BorderThickness="0.4"/>
-                <Button Click="Button_OnClick" Content="Read Egg Details" HorizontalAlignment="Stretch" HorizontalContentAlignment="Center"/>
+                <Button Command="{Binding OnDayCareDetailsCommand}" Content="Read Egg Details" HorizontalAlignment="Stretch" HorizontalContentAlignment="Center"/>
             </StackPanel>
         </Border>
 
         <Border Grid.Column="0" Grid.ColumnSpan="4" Grid.Row="1"  BorderBrush="DarkGray" BorderThickness="1" CornerRadius="5" Margin="0 2 0 4" IsVisible="{Binding HasError}">
             <TextBlock Margin="6" Foreground="Red" FontWeight="Bold" Text="{Binding ErrorText}"/>
-		</Border>
+        </Border>
 
-		<DataGrid Grid.Column="0" Grid.ColumnSpan="4" Grid.Row="2" ColumnWidth="*" Items="{Binding Persons}" AutoGenerateColumns="False" AlternatingRowBackground="#282828" SelectionMode="Single" CanUserReorderColumns="False" CanUserSortColumns="False" CanUserResizeColumns="False">
-            <DataGrid.Styles>
-                <Style Selector="DataGridRow">
-                    <Setter Property="Background" Value="{Binding RowColor}" />
-                </Style>
-            </DataGrid.Styles>
-            <DataGrid.Resources>
-                <DataTemplate x:Key="HPTemplate">
-                    <Grid ColumnDefinitions="Auto, Auto">
-                        <Label Grid.Column="0" Content="{Binding HP.Value}"/>
-                        <Label Grid.Column="1" FontSize="10" VerticalAlignment="Center" Content="{Binding HP.Inheritance, StringFormat='(\{0\})', Mode=OneWay}" IsVisible="{Binding HP.ShowInheritance}"/>
-                    </Grid>
-                </DataTemplate>
-                <DataTemplate x:Key="AtkTemplate">
-                    <Grid ColumnDefinitions="Auto, Auto">
-                        <Label Grid.Column="0" Content="{Binding Atk.Value}"/>
-                        <Label Grid.Column="1" FontSize="10" VerticalAlignment="Center" Content="{Binding Atk.Inheritance, StringFormat='(\{0\})', Mode=OneWay}" IsVisible="{Binding Atk.ShowInheritance}"/>
-                    </Grid>
-                </DataTemplate>
-                <DataTemplate x:Key="DefTemplate">
-                    <Grid ColumnDefinitions="Auto, Auto">
-                        <Label Grid.Column="0" Content="{Binding Def.Value}"/>
-                        <Label Grid.Column="1" FontSize="10" VerticalAlignment="Center" Content="{Binding Def.Inheritance, StringFormat='(\{0\})', Mode=OneWay}" IsVisible="{Binding Def.ShowInheritance}"/>
-                    </Grid>
-                </DataTemplate>
-                <DataTemplate x:Key="SpATemplate">
-                    <Grid ColumnDefinitions="Auto, Auto">
-                        <Label Grid.Column="0" Content="{Binding SpA.Value}"/>
-                        <Label Grid.Column="1" FontSize="10" VerticalAlignment="Center" Content="{Binding SpA.Inheritance, StringFormat='(\{0\})', Mode=OneWay}" IsVisible="{Binding SpA.ShowInheritance}"/>
-                    </Grid>
-                </DataTemplate>
-                <DataTemplate x:Key="SpDTemplate">
-                    <Grid ColumnDefinitions="Auto, Auto">
-                        <Label Grid.Column="0" Content="{Binding SpD.Value}"/>
-                        <Label Grid.Column="1" FontSize="10" VerticalAlignment="Center" Content="{Binding SpD.Inheritance, StringFormat='(\{0\})', Mode=OneWay}" IsVisible="{Binding SpD.ShowInheritance}"/>
-                    </Grid>
-                </DataTemplate>
-                <DataTemplate x:Key="SpeedTemplate">
-                    <Grid ColumnDefinitions="Auto, Auto">
-                        <Label Grid.Column="0" Content="{Binding Speed.Value}"/>
-                        <Label Grid.Column="1" FontSize="10" VerticalAlignment="Center" Content="{Binding Speed.Inheritance, StringFormat='(\{0\})', Mode=OneWay}" IsVisible="{Binding Speed.ShowInheritance}"/>
-                    </Grid>
-                </DataTemplate>
-            </DataGrid.Resources>
-            <DataGrid.Columns>
-                <DataGridTextColumn Header="Advances" Binding="{Binding Advances, Mode=OneWay}" IsReadOnly="True"/>
-                <DataGridTextColumn Header="Egg Seed" Binding="{Binding Seed, StringFormat={}{0:X8}, Mode=OneWay}" IsReadOnly="True" />
-                <DataGridTextColumn Header="PID" Binding="{Binding PID, StringFormat={}{0:X8}, Mode=OneWay}" IsReadOnly="True" />
-                <DataGridTextColumn Header="Shiny" Binding="{Binding Shiny}" IsReadOnly="True" />
-                <DataGridTemplateColumn Header="HP" CellTemplate="{StaticResource HPTemplate}"/>
-                <DataGridTemplateColumn Header="Atk" CellTemplate="{StaticResource AtkTemplate}"/>
-                <DataGridTemplateColumn Header="Def" CellTemplate="{StaticResource DefTemplate}"/>
-                <DataGridTemplateColumn Header="SpA" CellTemplate="{StaticResource SpATemplate}"/>
-                <DataGridTemplateColumn Header="SpD" CellTemplate="{StaticResource SpDTemplate}"/>
-                <DataGridTemplateColumn Header="Spe" CellTemplate="{StaticResource SpeedTemplate}"/>
-                <DataGridTextColumn Header="Gender" Binding="{Binding Gender}" IsReadOnly="True" />
-                <DataGridTextColumn Header="Nature" Binding="{Binding Nature, Mode=OneWay}" IsReadOnly="True" />
-                <DataGridTextColumn Header="Ability" Binding="{Binding Ability, Mode=OneWay}" IsReadOnly="True" />
-            </DataGrid.Columns>
-        </DataGrid>
+        <controls:ResultsTable Grid.Column="0" Grid.ColumnSpan="4" Grid.Row="2" Results="{Binding Results}"/>
     </Grid>
 
 </UserControl>

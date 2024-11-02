@@ -3,19 +3,27 @@
     using System;
     using System.Collections.Generic;
     using System.Collections.ObjectModel;
-    using System.Linq;
-    using Avalonia.Media;
+    using System.Reactive;
+    using Core;
     using Core.Generators;
+    using Core.Models;
+    using Core.Models.Enums;
+    using Models;
     using ReactiveUI;
+    using Utils;
 
     public class Gen8EggsViewModel : ViewModelBase
     {
-        public ObservableCollection<Person> Persons { get; set; } = new();
+        private readonly DiamondPearlService _diamondPearlService;
+
+        #region Properties
+
+        public ObservableCollection<GenerateTableResult> Results { get; set; } = new();
 
         private uint _initialAdvances;
         public uint InitialAdvances { get => _initialAdvances; set => this.RaiseAndSetIfChanged(ref _initialAdvances, value); }
 
-        private uint _maximumAdvances = 1_000;
+        private uint _maximumAdvances = 10_000;
         public uint MaximumAdvances { get => _maximumAdvances; set => this.RaiseAndSetIfChanged(ref _maximumAdvances, value); }
 
         private ulong _seed0;
@@ -65,145 +73,159 @@
 
         public IEnumerable<string> Abilities { get; set; } = new[] { "1", "2", "H" };
 
-        public IEnumerable<string> AbilitiesFilter { get; set; } = new[] { "Any", "1", "2", "H" };
-
         public IEnumerable<string> Genders { get; set; } = new[] { "Male", "Female", "Genderless", "Ditto" };
 
-        public IEnumerable<string> GendersFilter { get; set; } = new[] { "Any", "Male", "Female" };
-
-        public IEnumerable<string> GendersRatioFilter { get; set; } = new[] { "Genderless", "50% ♂ / 50% ♀", "25% ♂ / 75% ♀", "75% ♂ / 25% ♀", "87,5% ♂ / 12,5% ♀", "100% ♂", "100% ♀" };
-
-        public IEnumerable<string> Natures { get; set; } = GetNatures();
-
-        public IEnumerable<string> NaturesFilter { get; set; } = GetNatures(true);
+        public IEnumerable<KeyValue<Nature, string>> Natures { get; set; } = KeyValues.Natures;
 
         public IEnumerable<string> Items { get; set; } = new[] { "None", "Everstone", "Destiny Knot" };
 
-        public IEnumerable<string> Shinies { get; set; } = new[] { "Any", "Star", "Square", "Star/Square" };
+        #endregion
 
-        private static IEnumerable<string> GetNatures(bool addAny = false)
+        public Gen8EggsViewModel(DiamondPearlService diamondPearlService)
         {
-            var natures = Enum.GetValues<Nature>()
-                .Select(n => n.ToString())
-                .ToList();
+            _diamondPearlService = diamondPearlService;
 
-            if (addAny)
-                natures.Insert(0, "Any");
-
-            return natures;
+            OnGenerateCommand = ReactiveCommand.Create(GenerateExecute);
+            OnDayCareDetailsCommand = ReactiveCommand.Create(EggDetailsExecute);
         }
-    }
 
-    public class FilterStats
-    {
-        public Values HP { get; set; } = new();
+        public ReactiveCommand<Unit, Unit> OnGenerateCommand { get; }
 
-        public Values Atk { get; set; } = new();
+        public ReactiveCommand<Unit, Unit> OnDayCareDetailsCommand { get; }
 
-        public Values Def { get; set; } = new();
-
-        public Values SpA { get; set; } = new();
-
-        public Values SpD { get; set; } = new();
-
-        public Values Speed { get; set; } = new();
-
-        public byte[] MinimumValues => new[] { (byte)HP.Minimum, (byte)Atk.Minimum, (byte)Def.Minimum, (byte)SpA.Minimum, (byte)SpD.Minimum, (byte)Speed.Minimum };
-
-        public byte[] MaximumValues => new[] { (byte)HP.Maximum, (byte)Atk.Maximum, (byte)Def.Maximum, (byte)SpA.Maximum, (byte)SpD.Maximum, (byte)Speed.Maximum };
-
-        public int Gender { get; set; }
-
-        public int GenderRatio { get; set; }
-
-        public int Ability { get; set; }
-
-        public int Nature { get; set; }
-
-        public int Shiny { get; set; }
-    }
-
-    public class Values
-    {
-        public int Minimum { get; set; }
-
-        public int Maximum { get; set; } = 31;
-    }
-
-    public class Person
-    {
-        public uint Advances { get; set; }
-
-        public uint Seed { get; set; }
-
-        public uint PID { get; set; }
-
-        public Shiny Shiny { get; set; }
-
-        public Nature Nature { get; set; } // TODO sbyte
-
-        public uint Ability { get; set; } // TODO sbyte
-
-        public Gender Gender { get; set; }
-
-        public IVs HP { get; set; }
-
-        public IVs Atk { get; set; }
-
-        public IVs Def { get; set; }
-
-        public IVs SpA { get; set; }
-
-        public IVs SpD { get; set; }
-
-        public IVs Speed { get; set; }
-
-        public bool IsShiny { get; set; }
-
-        public IBrush? RowColor => IsShiny ? new SolidColorBrush(Color.FromRgb(144, 0, 0)) : null;
-    }
-
-    public class IVs
-    {
-        public byte Value { get; set; }
-
-        public Inheritance? Inheritance { get; set; }
-
-        public bool ShowInheritance => Inheritance != null;
-
-        public IVs(byte value, Inheritance? inheritance = null)
+        private void EggDetailsExecute()
         {
-            Value = value;
-            Inheritance = inheritance;
+            var eggDetails = _diamondPearlService.GetDayCareDetails();
+            EggSeed = eggDetails.Seed;
+            StepCount = eggDetails.StepCount;
         }
-    }
 
-    public enum Inheritance
-    {
-        A,
-        B
-    }
+        private void GenerateExecute()
+        {
+            if (!CompatibleParents(ParentA.Gender, ParentB.Gender))
+            {
+                ErrorText = "Parents aren't compatible!";
 
-    public class ParentExtended : Parent
-    {
-        public byte HP { get => IVs[0]; set => IVs[0] = value; }
+                return;
+            }
 
-        public byte Atk { get => IVs[1]; set => IVs[1] = value; }
+            if (ReorderParents(ParentA.Gender, ParentB.Gender))
+                (ParentA, ParentB) = (ParentB, ParentA);
 
-        public byte Def { get => IVs[2]; set => IVs[2] = value; }
+            var compatibility = GetCompatibility(Compatibility, false); // TODO OvalCharm in a profile?
+            var natureFilter = KeyValues.NaturesFilter[FilterStats.Nature].Key;
+            var genderRatio = KeyValues.GenderRatio[FilterStats.GenderRatio].Key;
 
-        public byte SpA { get => IVs[3]; set => IVs[3] = value; }
+            var request = new Egg8Request
+            {
+                TrainerId = 64785, // TODO TID in a profile? 
+                SecretId = 18176, // TODO SID in a profile?
+                ParentA = ParentA,
+                ParentB = ParentB,
+                GenderRatio = genderRatio,
+                Filter = new Filter
+                {
+                    Gender = FilterStats.Gender switch
+                    {
+                        0 => GenderFilter.Any,
+                        _ => (GenderFilter)FilterStats.Gender - 1
+                    },
+                    Natures = new[] { natureFilter },
+                    Ability = FilterStats.Ability switch
+                    {
+                        0 => AbilityFilter.Any,
+                        _ => (AbilityFilter)FilterStats.Ability - 1
+                    },
+                    MinIVs = FilterStats.MinimumValues,
+                    MaxIVs = FilterStats.MaximumValues,
+                    Shiny = KeyValues.Shinies[FilterStats.Shiny].Key
+                },
+                IsMasuda = true,
+                Compatibility = compatibility
+            };
 
-        public byte SpD { get => IVs[4]; set => IVs[4] = value; }
+            var eggGen8 = new EggGenerator8(InitialAdvances, MaximumAdvances);
 
-        public byte Speed { get => IVs[5]; set => IVs[5] = value; }
+            if (Seed0 + Seed1 == 0)
+            {
+                ErrorText = "S0 and S1 cannot be 0!";
 
-        public new int Ability { get => base.Ability; set => base.Ability = (byte)value; }
+                return;
+            }
 
-        public int Gender { get; set; }
+            // Clear on success!
+            ErrorText = string.Empty;
 
-        public new int Nature { get => (int)base.Nature; set => base.Nature = (Nature)value; }
+            var results = eggGen8.Generate(Seed0, Seed1, request);
 
-        public new int HeldItem { get => (int)base.HeldItem.GetValueOrDefault(); set => base.HeldItem = (Item)value; }
+            Results.Clear();
+
+            foreach (var eggResult in results)
+                Results.Add(new GenerateTableResult(eggResult));
+        }
+
+        private static byte GetCompatibility(int compatibilityIndex, bool ovalCharm)
+        {
+            var compatibility = compatibilityIndex switch
+            {
+                0 => 20,
+                1 => 50,
+                2 => 70,
+                _ => throw new ArgumentOutOfRangeException(nameof(compatibilityIndex), compatibilityIndex, null)
+            };
+
+            if (ovalCharm)
+                compatibility = compatibility switch
+                {
+                    20 => 40,
+                    50 => 80,
+                    _ => 88
+                };
+
+            return (byte)compatibility;
+        }
+
+        private static bool CompatibleParents(int parent1, int parent2)
+        {
+            switch (parent1)
+            {
+                // Male/Female
+                case 0 when parent2 == 1:
+                case 1 when parent2 == 0:
+
+                // Ditto/Female
+                case 3 when parent2 == 1:
+                case 1 when parent2 == 3:
+
+                // Male/Ditto
+                case 0 when parent2 == 3:
+                case 3 when parent2 == 0:
+
+                // Genderless/Ditto
+                case 2 when parent2 == 3:
+                case 3 when parent2 == 2:
+                    return true;
+
+                default:
+                    return false;
+            }
+        }
+
+        private static bool ReorderParents(int parent1, int parent2)
+        {
+            // Female/Male -> Male/Female
+            var flag = parent1 == 1 && parent2 == 0;
+
+            // Female/Ditto -> Ditto/Female
+            flag |= parent1 == 1 && parent2 == 3;
+
+            // Ditto/Male -> Male/Ditto
+            flag |= parent1 == 3 && parent2 == 0;
+
+            // Ditto/Genderless -> Genderless/Ditto
+            flag |= parent1 == 3 && parent2 == 2;
+
+            return flag;
+        }
     }
 }

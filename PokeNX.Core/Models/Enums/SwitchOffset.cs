@@ -1,4 +1,4 @@
-namespace PokeNX.Core.Models
+namespace PokeNX.Core.Models.Enums
 {
     public enum SwitchOffset
     {

@@ -8,10 +8,4 @@
         <NumericUpDown Grid.Column="2" Value="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type UserControl}}, Path=MaxValue}" ShowButtonSpinner="False" Minimum="0" Maximum="31"/>
     </Grid>
 
-    <!--<StackPanel Orientation="Horizontal" Spacing="5">
-        <NumericUpDown Value="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type UserControl}}, Path=MinValue}" ShowButtonSpinner="False" Minimum="0" Maximum="31"/>
-        <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" Text="~"/>
-        <NumericUpDown Value="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type UserControl}}, Path=MaxValue}" ShowButtonSpinner="False" Minimum="0" Maximum="31"/>
-    </StackPanel>-->
-
 </UserControl>

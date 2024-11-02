@@ -2,11 +2,12 @@
 {
     using System.Net;
     using System.Net.Sockets;
+    using System.Text;
     using System.Threading;
     using Extensions;
-    using Models;
+    using Models.Enums;
     using Utils;
-    using static Models.SwitchOffset;
+    using static Models.Enums.SwitchOffset;
 
     public abstract class SysBotService
     {
@@ -43,6 +44,13 @@
             }
         }
 
+        public string GetTitleID()
+        {
+            var bytes = ReadRaw(SwitchCommand.GetTitleID(), 17);
+
+            return Encoding.ASCII.GetString(bytes).Trim();
+        }
+
         public byte[] ReadBytesMain(ulong offset, int length) => ReadBytes(offset, length, Main);
         public byte[] ReadBytesAbsolute(ulong offset, int length) => ReadBytes(offset, length, Absolute);
 
@@ -66,7 +74,7 @@
         {
             var bytesReceived = _connection.Receive(buffer, 0, 1, SocketFlags.None);
 
-            while (buffer[bytesReceived - 1] != (byte) '\n')
+            while (buffer[bytesReceived - 1] != (byte)'\n')
                 bytesReceived += _connection.Receive(buffer, bytesReceived, 1, SocketFlags.None);
 
             return bytesReceived;
@@ -86,6 +94,19 @@
                 ReadInternal(buffer);
 
                 return buffer.ConvertHexBytes();
+            }
+        }
+
+        private byte[] ReadRaw(byte[] command, int length)
+        {
+            lock (_lock)
+            {
+                _connection.Send(command);
+
+                var buffer = new byte[length];
+                ReadInternal(buffer);
+
+                return buffer;
             }
         }
     }
