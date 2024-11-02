@@ -1,8 +1,7 @@
-namespace PokeNX.DesktopApp.ViewModels
-{
-    using ReactiveUI;
+namespace PokeNX.DesktopApp.ViewModels;
 
-    public class ViewModelBase : ReactiveObject
-    {
-    }
+using ReactiveUI;
+
+public class ViewModelBase : ReactiveObject
+{
 }

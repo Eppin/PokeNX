@@ -1,0 +1,59 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:controls="clr-namespace:PokeNX.DesktopApp.Controls"
+             xmlns:desktopApp="clr-namespace:PokeNX.DesktopApp"
+             mc:Ignorable="d" d:DesignWidth="1400" d:DesignHeight="600"
+             d:DataContext="{x:Static desktopApp:DesignData.Gen8LegendaryViewModel}"
+             x:Class="PokeNX.DesktopApp.Views.Gen8Legendary">
+
+    <Grid ColumnDefinitions="*,*,*,*" RowDefinitions="Auto,Auto,*">
+
+        <Border Grid.Column="0" Grid.Row="0" BorderBrush="DarkGray" BorderThickness="1" CornerRadius="5" Margin="0 0 2 4">
+            <controls:GenerateBox Margin="10"
+                                  ShowGenerators="True"
+                                  Generator="{Binding Generator}"
+                                  InitialAdvances="{Binding InitialAdvances, Mode=TwoWay}"
+                                  MaximumAdvances="{Binding MaximumAdvances, Mode=TwoWay}"
+                                  Seed0="{Binding Seed0, Mode=TwoWay}"
+                                  Seed1="{Binding Seed1, Mode=TwoWay}"
+                                  GenerateCommand="{Binding OnGenerateCommand}"/>
+        </Border>
+
+        <Border Grid.Column="1" Grid.Row="0" BorderBrush="DarkGray" BorderThickness="1" CornerRadius="5" Margin="2 0 2 4">
+            <StackPanel Margin="10" Spacing="10">
+                <CheckBox Content="Set of 3 IVs" IsChecked="{Binding Set3IVs}"/>
+            </StackPanel>
+        </Border>
+
+        <Border Grid.Column="2" Grid.Row="0" BorderBrush="DarkGray" BorderThickness="1" CornerRadius="5" Margin="2 0 2 4">
+            <controls:ResultsFilter FilterStats="{Binding FilterStats}" Margin="10"/>
+        </Border>
+
+        <Border Grid.Column="3" Grid.Row="0" BorderBrush="DarkGray" BorderThickness="1" CornerRadius="5" Margin="2 0 0 4">
+            <StackPanel Margin="10" Spacing="10">
+                <TextBlock>Encounter EC</TextBlock>
+                <TextBox Text="{Binding EncounterEC, Mode=OneWay, StringFormat={}{0:X8}, Mode=OneWay}" IsEnabled="False"/>
+                <Separator BorderBrush="DarkGray" BorderThickness="0.4"/>
+                <TextBlock>Encounter PID</TextBlock>
+                <TextBox Text="{Binding EncounterPID, Mode=OneWay, StringFormat={}{0:X8}, Mode=OneWay}" IsEnabled="False"/>
+                <Separator BorderBrush="DarkGray" BorderThickness="0.4"/>
+                <TextBlock>Target Advances</TextBlock>
+                <NumericUpDown Value="{Binding TargetAdvances, Mode=TwoWay}" Minimum="0"/>
+                <Separator BorderBrush="DarkGray" BorderThickness="0.4"/>
+                <TextBlock>Advances Left</TextBlock>
+                <TextBox Text="{Binding AdvancesLeft, Mode=TwoWay}" IsEnabled="False"/>
+                <Separator BorderBrush="DarkGray" BorderThickness="0.4"/>
+                <Button Command="{Binding OnEncounterDetailsCommand}" Content="Read Encounter Details" HorizontalAlignment="Stretch" HorizontalContentAlignment="Center" IsEnabled="{Binding IsConnected}"/>
+            </StackPanel>
+        </Border>
+
+        <Border Grid.Column="0" Grid.ColumnSpan="4" Grid.Row="1" BorderBrush="DarkGray" BorderThickness="1" CornerRadius="5" Margin="0 2 0 4" IsVisible="{Binding HasError}">
+            <TextBlock Margin="6" Foreground="Red" FontWeight="Bold" Text="{Binding ErrorText}"/>
+        </Border>
+
+        <controls:ResultsTable Grid.Column="0" Grid.ColumnSpan="4" Grid.Row="2" Results="{Binding Results}" ShowEggSeed="False" ShowHeldItem="False" ShowEncounterSlot="False" ShowAbility="{Binding ShowAbility}" ShowGender="{Binding ShowGender}"/>
+    </Grid>
+
+</UserControl>

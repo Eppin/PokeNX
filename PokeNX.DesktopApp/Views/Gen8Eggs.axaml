@@ -16,29 +16,19 @@
     <Grid ColumnDefinitions="*,*,*,*" RowDefinitions="Auto,Auto,*">
 
         <Border Grid.Column="0" Grid.Row="0" BorderBrush="DarkGray" BorderThickness="1" CornerRadius="5" Margin="0 0 2 4">
-            <StackPanel Margin="10" Spacing="10">
-                <TextBlock>Initial Advances</TextBlock>
-                <NumericUpDown Value="{Binding InitialAdvances, Mode=TwoWay}" Minimum="0"/>
-                <Separator BorderBrush="DarkGray" BorderThickness="0.4"/>
-                <TextBlock>Maximum Advances</TextBlock>
-                <NumericUpDown Value="{Binding MaximumAdvances, Mode=TwoWay}" Minimum="0"/>
-                <Separator BorderBrush="DarkGray" BorderThickness="0.4"/>
-                <TextBlock>Seed 0</TextBlock>
-                <TextBox Text="{Binding Seed0, Mode=TwoWay, Converter={StaticResource HexConverter}}"/>
-                <Separator BorderBrush="DarkGray" BorderThickness="0.4"/>
-                <TextBlock>Seed 1</TextBlock>
-                <TextBox Text="{Binding Seed1, Mode=TwoWay, Converter={StaticResource HexConverter}}"/>
-                <Separator BorderBrush="DarkGray" BorderThickness="0.4"/>
-                <TextBlock>Compatibility</TextBlock>
-                <ComboBox HorizontalAlignment="Stretch" Items="{Binding Compatibilities}" SelectedIndex="{Binding Compatibility}"/>
-                <Separator BorderBrush="DarkGray" BorderThickness="0.4"/>
-                <Button Command="{Binding OnGenerateCommand}" Content="Generate" HorizontalAlignment="Stretch" HorizontalContentAlignment="Center"/>
-            </StackPanel>
+            <controls:GenerateBox Margin="10"
+                                  ShowCompatibilities="True"
+                                  Compatibility="{Binding Compatibility, Mode=TwoWay}"
+                                  InitialAdvances="{Binding InitialAdvances, Mode=TwoWay}"
+                                  MaximumAdvances="{Binding MaximumAdvances, Mode=TwoWay}"
+                                  Seed0="{Binding Seed0, Mode=TwoWay}"
+                                  Seed1="{Binding Seed1, Mode=TwoWay}"
+                                  GenerateCommand="{Binding OnGenerateCommand}"></controls:GenerateBox>
         </Border>
 
         <Border Grid.Column="1" Grid.Row="0" BorderBrush="DarkGray" BorderThickness="1" CornerRadius="5" Margin="2 0 2 4">
             <StackPanel Margin="10" Spacing="10">
-                <Grid ColumnDefinitions="0.5*,*,*" RowDefinitions="*,*,*,*,*,*,*,*,*,*,*,*,*">
+                <Grid ColumnDefinitions="0.5*,*,*" RowDefinitions="*,*,*,*,*,*,*,*,*,*,*,*,*,*">
                     <Grid.Styles>
                         <Style Selector="TextBlock">
                             <Setter Property="Margin" Value="4" />
@@ -88,6 +78,8 @@
                     <NumericUpDown Grid.Column="2" Grid.Row="9" Value="{Binding ParentB.SpD}" ShowButtonSpinner="False" Minimum="0" Maximum="31"/>
                     <NumericUpDown Grid.Column="2" Grid.Row="10" Value="{Binding ParentB.Speed}" ShowButtonSpinner="False" Minimum="0" Maximum="31"/>
                     <ComboBox Grid.Column="2" Grid.Row="12" HorizontalAlignment="Stretch" Items="{Binding Items}" SelectedIndex="{Binding ParentB.HeldItem}"/>
+
+                    <CheckBox Grid.Column="0" Grid.ColumnSpan="3" Grid.Row="13" Content="Masuda" IsChecked="{Binding Masuda}"/>
                 </Grid>
             </StackPanel>
         </Border>
@@ -110,7 +102,7 @@
                 <TextBlock>Advances Left</TextBlock>
                 <TextBox Text="{Binding AdvancesLeft, Mode=TwoWay}" IsEnabled="False"/>
                 <Separator BorderBrush="DarkGray" BorderThickness="0.4"/>
-                <Button Command="{Binding OnDayCareDetailsCommand}" Content="Read Egg Details" HorizontalAlignment="Stretch" HorizontalContentAlignment="Center"/>
+                <Button Command="{Binding OnDayCareDetailsCommand}" Content="Read Egg Details" HorizontalAlignment="Stretch" HorizontalContentAlignment="Center" IsEnabled="{Binding IsConnected}"/>
             </StackPanel>
         </Border>
 
@@ -118,7 +110,7 @@
             <TextBlock Margin="6" Foreground="Red" FontWeight="Bold" Text="{Binding ErrorText}"/>
         </Border>
 
-        <controls:ResultsTable Grid.Column="0" Grid.ColumnSpan="4" Grid.Row="2" Results="{Binding Results}"/>
+        <controls:ResultsTable Grid.Column="0" Grid.ColumnSpan="4" Grid.Row="2" ShowHeldItem="False" ShowEncounterSlot="False" Results="{Binding Results}"/>
     </Grid>
 
 </UserControl>

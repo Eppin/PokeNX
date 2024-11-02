@@ -1,152 +1,183 @@
-namespace PokeNX.DesktopApp.ViewModels
+namespace PokeNX.DesktopApp.ViewModels;
+
+using System.Reactive;
+using System.Text.Json;
+using System.Text.Json.Serialization;
+using System.Threading;
+using Core;
+using Models;
+using ReactiveUI;
+using Utils;
+
+public class MainWindowViewModel : ViewModelBase
 {
-    using System.Reactive;
-    using System.Threading;
-    using Core;
-    using Core.RNG;
-    using Models;
-    using ReactiveUI;
-
-    public class MainWindowViewModel : ViewModelBase
+    private static readonly JsonSerializerOptions JsonSerializerOptions = new()
     {
-        private CancellationTokenSource _cancellationTokenSource = new();
+        DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
+        PropertyNameCaseInsensitive = true,
+        WriteIndented = true
+    };
 
-        public DiamondPearlService DiamondPearlService { get; }
+    private readonly string _configPath = Path.Combine(Directory.GetCurrentDirectory(), "config.json");
 
-        public Gen8EggsViewModel Gen8EggsViewModel { get; }
+    private AppConfig _appConfig = new();
 
-        public Gen8StationaryViewModel Gen8StationaryViewModel { get; }
+    private CancellationTokenSource _cancellationTokenSource = new();
 
-        #region Properties
-        private string _ipAddress = string.Empty;
-        public string IPAddress { get => _ipAddress; set => this.RaiseAndSetIfChanged(ref _ipAddress, value); }
+    public DiamondPearlService DiamondPearlService { get; }
 
-        private int _port = 6000; // Default Sys-bot port
-        public int Port { get => _port; set => this.RaiseAndSetIfChanged(ref _port, value); }
+    public Gen8EggsViewModel Gen8EggsViewModel { get; }
 
-        private ulong _seed0;
-        public ulong Seed0 { get => _seed0; set => this.RaiseAndSetIfChanged(ref _seed0, value); }
+    public Gen8LegendaryViewModel Gen8LegendaryViewModel { get; }
 
-        private ulong _seed1;
-        public ulong Seed1 { get => _seed1; set => this.RaiseAndSetIfChanged(ref _seed1, value); }
+    public Gen8WildViewModel Gen8WildViewModel { get; }
 
-        private uint _advances;
-
-        public uint Advances
+    #region Properties
+    private string _ipAddress = string.Empty;
+    public string IPAddress
+    {
+        get => _ipAddress;
+        set
         {
-            get => _advances;
-            set
-            {
-                this.RaiseAndSetIfChanged(ref _advances, value);
-
-                if (Gen8EggsViewModel.TargetAdvances > 0)
-                    Gen8EggsViewModel.AdvancesLeft = (int)(Gen8EggsViewModel.TargetAdvances - value);
-            }
+            this.RaiseAndSetIfChanged(ref _ipAddress, value);
+            _appConfig.HostAddress = value;
         }
+    }
 
-        private bool _isConnected;
-        public bool IsConnected
+    private int _port;
+    public int Port
+    {
+        get => _port;
+        set
         {
-            get => _isConnected;
-            set
-            {
-                this.RaiseAndSetIfChanged(ref _isConnected, value);
-                this.RaisePropertyChanged(nameof(ConnectionString));
-            }
+            this.RaiseAndSetIfChanged(ref _port, value);
+            _appConfig.Port = value;
         }
+    }
 
-        public string ConnectionString => IsConnected ? "Disconnect" : "Connect";
+    private ulong _seed0;
+    public ulong Seed0 { get => _seed0; set => this.RaiseAndSetIfChanged(ref _seed0, value); }
 
-        private ConnectedGame _connectedGame = new();
-        public ConnectedGame ConnectedGame { get => _connectedGame; set => this.RaiseAndSetIfChanged(ref _connectedGame, value); }
-        #endregion
+    private ulong _seed1;
+    public ulong Seed1 { get => _seed1; set => this.RaiseAndSetIfChanged(ref _seed1, value); }
 
-        public MainWindowViewModel()
+    private uint _advances;
+
+    public uint Advances
+    {
+        get => _advances;
+        set
         {
-            DiamondPearlService = new DiamondPearlService();
-            Gen8EggsViewModel = new Gen8EggsViewModel(DiamondPearlService);
-            Gen8StationaryViewModel = new Gen8StationaryViewModel(DiamondPearlService);
+            this.RaiseAndSetIfChanged(ref _advances, value);
 
-            OnConnectCommand = ReactiveCommand.Create(OnConnectExecute);
-            OnUseSeedCommand = ReactiveCommand.Create(OnUseSeedExecute);
+            if (Gen8EggsViewModel.TargetAdvances > 0)
+                Gen8EggsViewModel.AdvancesLeft = (int)(Gen8EggsViewModel.TargetAdvances - value);
+
+            if (Gen8LegendaryViewModel.TargetAdvances > 0)
+                Gen8LegendaryViewModel.AdvancesLeft = (int)(Gen8LegendaryViewModel.TargetAdvances - value);
         }
+    }
 
-        public ReactiveCommand<Unit, Unit> OnConnectCommand { get; }
-
-        public ReactiveCommand<Unit, Unit> OnUseSeedCommand { get; }
-
-        private void OnConnectExecute()
+    private bool _isConnected;
+    public bool IsConnected
+    {
+        get => _isConnected;
+        set
         {
-            if (IsConnected)
-            {
-                _cancellationTokenSource.Cancel();
+            this.RaiseAndSetIfChanged(ref _isConnected, value);
+            this.RaisePropertyChanged(nameof(ConnectionString));
+        }
+    }
 
-                for (var i = 0; i < 500; i++)
-                    Thread.Sleep(1);
+    public string ConnectionString => IsConnected ? "Connected" : "Connect";
 
-                DiamondPearlService.Disconnect();
-                IsConnected = false;
+    private ConnectedGame _connectedGame = new();
+    public ConnectedGame ConnectedGame { get => _connectedGame; set => this.RaiseAndSetIfChanged(ref _connectedGame, value); }
+    #endregion
 
-            }
+    public MainWindowViewModel()
+    {
+        DiamondPearlService = new DiamondPearlService();
+        Gen8EggsViewModel = new Gen8EggsViewModel(DiamondPearlService);
+        Gen8LegendaryViewModel = new Gen8LegendaryViewModel(DiamondPearlService);
+        Gen8WildViewModel = new Gen8WildViewModel(DiamondPearlService);
+
+        OnConnectCommand = ReactiveCommand.Create(OnConnectExecute);
+        OnUseSeedCommand = ReactiveCommand.Create(OnUseSeedExecute);
+
+        LoadAppConfig();
+
+        EventAggregator.RegisterHandler<OnExitMessage>(_ => _cancellationTokenSource.Cancel());
+    }
+
+    public ReactiveCommand<Unit, Unit> OnConnectCommand { get; }
+
+    public ReactiveCommand<Unit, Unit> OnUseSeedCommand { get; }
+
+    private void OnConnectExecute()
+    {
+        if (IsConnected)
+            return;
+
+        WriteAppConfig();
+
+        DiamondPearlService.Connect(IPAddress, Port);
+        var (tid, sid) = DiamondPearlService.GetTrainerInfo();
+
+        ConnectedGame = new ConnectedGame
+        {
+            Game = DiamondPearlService.Game,
+            Version = DiamondPearlService.Version,
+            TID = tid,
+            SID = sid
+        };
+
+        EventAggregator.PostMessage(new ProfileMessage(tid, sid));
+        EventAggregator.PostMessage(new ConnectionMessage(true));
+
+        IsConnected = true;
+
+        _cancellationTokenSource = new CancellationTokenSource();
+
+        var thread = new Thread(() => DiamondPearlService.CalulateMainRNG((seed0, seed1, advances) =>
+        {
+            Seed0 = seed0;
+            Seed1 = seed1;
+            Advances = advances;
+        }, _cancellationTokenSource.Token));
+
+        thread.Start();
+    }
+
+    private void OnUseSeedExecute()
+    {
+        EventAggregator.PostMessage(new UseSeedMessage(Seed0, Seed1));
+        DiamondPearlService.ResetAdvances();
+    }
+
+    private void LoadAppConfig()
+    {
+        try
+        {
+            if (File.Exists(_configPath))
+                _appConfig = JsonSerializer.Deserialize<AppConfig>(File.ReadAllText(_configPath), JsonSerializerOptions);
             else
-            {
-                DiamondPearlService.Connect(IPAddress, Port);
-                var (tid, sid) = DiamondPearlService.GetTrainerInfo();
-
-                ConnectedGame = new ConnectedGame
-                {
-                    Game = DiamondPearlService.Game,
-                    TID = tid,
-                    SID = sid
-                };
-
-                IsConnected = true;
-
-                DiamondPearlService.TestBoxPointer();
-                return;
-
-                _cancellationTokenSource = new CancellationTokenSource();
-
-                var thread = new Thread(() => CalulateMainRNG(_cancellationTokenSource.Token));
-                thread.Start();
-            }
+                File.WriteAllText(_configPath, JsonSerializer.Serialize(_appConfig, JsonSerializerOptions));
         }
-
-        private void OnUseSeedExecute()
+        catch (Exception)
         {
-            // TODO.. Notifier pattern
+            // Ignore
         }
 
-        private void CalulateMainRNG(CancellationToken cts)
-        {
-            Advances = 0;
+        if (_appConfig == null)
+            return;
 
-            var (s0, s1) = DiamondPearlService.MainRNG();
-            var rng = new XorShift(s0, s1);
+        IPAddress = _appConfig.HostAddress;
+        Port = _appConfig.Port;
+    }
 
-            var (tmpS0, tmpS1) = rng.Seed();
-
-            while (true)
-            {
-                if (cts.IsCancellationRequested) break;
-
-                var (ramS0, ramS1) = DiamondPearlService.MainRNG();
-
-                while (ramS0 != tmpS0 || ramS1 != tmpS1)
-                {
-                    if (cts.IsCancellationRequested) break;
-
-                    rng.Next();
-                    (tmpS0, tmpS1) = rng.Seed();
-                    Advances++;
-
-                    if (ramS0 != tmpS0 || ramS1 != tmpS1)
-                        continue;
-
-                    Seed0 = ramS0;
-                    Seed1 = ramS1;
-                }
-            }
-        }
+    private void WriteAppConfig()
+    {
+        File.WriteAllText(_configPath, JsonSerializer.Serialize(_appConfig, JsonSerializerOptions));
     }
 }
