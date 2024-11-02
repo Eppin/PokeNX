@@ -1,9 +1,8 @@
-﻿namespace PokeNX.DesktopApp.Models
-{
-    public class Values
-    {
-        public int Minimum { get; set; }
+﻿namespace PokeNX.DesktopApp.Models;
 
-        public int Maximum { get; set; } = 31;
-    }
+public class Values
+{
+    public int Minimum { get; set; }
+
+    public int Maximum { get; set; } = 31;
 }

@@ -1,8 +1,7 @@
-namespace PokeNX.Core.Models.Enums
+namespace PokeNX.Core.Models.Enums;
+
+public enum Inheritance
 {
-    public enum Inheritance
-    {
-        A,
-        B
-    }
+    A,
+    B
 }

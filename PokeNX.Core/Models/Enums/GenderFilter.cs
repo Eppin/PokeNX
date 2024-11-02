@@ -1,10 +1,9 @@
-﻿namespace PokeNX.Core.Models.Enums
-{
-    public enum GenderFilter : byte
-    {
-        Male = 0,
-        Female = 1,
+﻿namespace PokeNX.Core.Models.Enums;
 
-        Any = 255
-    }
+public enum GenderFilter : byte
+{
+    Male = 0,
+    Female = 1,
+
+    Any = 255
 }

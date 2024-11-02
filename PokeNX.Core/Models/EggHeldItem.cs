@@ -1,9 +1,8 @@
-namespace PokeNX.Core.Models
+namespace PokeNX.Core.Models;
+
+public enum EggHeldItem
 {
-    public enum EggHeldItem
-    {
-        None = 0,
-        Everstone = 1,
-        DestinyKnot = 2
-    }
+    None = 0,
+    Everstone = 1,
+    DestinyKnot = 2
 }

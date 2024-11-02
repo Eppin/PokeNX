@@ -1,18 +1,17 @@
-namespace PokeNX.DesktopApp.Views
+namespace PokeNX.DesktopApp.Views;
+
+using Avalonia.Controls;
+using Avalonia.Markup.Xaml;
+
+public partial class Gen8Legendary : UserControl
 {
-    using Avalonia.Controls;
-    using Avalonia.Markup.Xaml;
-
-    public partial class Gen8Legendary : UserControl
+    public Gen8Legendary()
     {
-        public Gen8Legendary()
-        {
-            InitializeComponent();
-        }
+        InitializeComponent();
+    }
 
-        private void InitializeComponent()
-        {
-            AvaloniaXamlLoader.Load(this);
-        }
+    private void InitializeComponent()
+    {
+        AvaloniaXamlLoader.Load(this);
     }
 }
