@@ -1,19 +1,18 @@
-namespace PokeNX.Core.Models
+namespace PokeNX.Core.Models;
+
+using Enums;
+
+public class IVs
 {
-    using Enums;
+    public byte Value { get; set; }
 
-    public class IVs
+    public Inheritance? Inheritance { get; set; }
+
+    public bool InheritanceVisible => Inheritance != null;
+
+    public IVs(byte value, Inheritance? inheritance = null)
     {
-        public byte Value { get; set; }
-
-        public Inheritance? Inheritance { get; set; }
-
-        public bool InheritanceVisible => Inheritance != null;
-
-        public IVs(byte value, Inheritance? inheritance = null)
-        {
-            Value = value;
-            Inheritance = inheritance;
-        }
+        Value = value;
+        Inheritance = inheritance;
     }
 }

@@ -1,18 +1,17 @@
-namespace PokeNX.Core.Models
+namespace PokeNX.Core.Models;
+
+using System.Collections.Generic;
+using Enums;
+
+public class GameOffsets
 {
-    using System.Collections.Generic;
-    using Enums;
+    public Game Game { get; }
 
-    public class GameOffsets
+    public IEnumerable<GameOffset> Offsets { get; }
+
+    public GameOffsets(Game game, IEnumerable<GameOffset> offsets)
     {
-        public Game Game { get; }
-
-        public IEnumerable<GameOffset> Offsets { get; }
-
-        public GameOffsets(Game game, IEnumerable<GameOffset> offsets)
-        {
-            Game = game;
-            Offsets = offsets;
-        }
+        Game = game;
+        Offsets = offsets;
     }
 }

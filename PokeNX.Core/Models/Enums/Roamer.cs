@@ -1,9 +1,8 @@
-﻿namespace PokeNX.Core.Models.Enums
+﻿namespace PokeNX.Core.Models.Enums;
+
+public enum Roamer
 {
-    public enum Roamer
-    {
-        None,
-        Mesprit = 481,
-        Cresselia = 488
-    }
+    None,
+    Mesprit = 481,
+    Cresselia = 488
 }

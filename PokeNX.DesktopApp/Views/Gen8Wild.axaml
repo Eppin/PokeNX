@@ -3,7 +3,9 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:controls="clr-namespace:PokeNX.DesktopApp.Controls"
+             xmlns:desktopApp="clr-namespace:PokeNX.DesktopApp"
              mc:Ignorable="d" d:DesignWidth="1400" d:DesignHeight="600"
+             d:DataContext="{x:Static desktopApp:DesignData.Gen8WildViewModel}"
              x:Class="PokeNX.DesktopApp.Views.Gen8Wild">
 
     <Grid ColumnDefinitions="*,*,*,*" RowDefinitions="Auto,Auto,*">
