@@ -55,13 +55,12 @@ namespace PokeNX.Core
         {
             var baseAddress = GetPlayerPrefsProvider();
 
-            //var trainerInfo = ReadBytesAbsolute(baseAddress + 0xe8, sizeof(uint));
-            var trainerInfo = ReadBytesAbsolute(baseAddress + 0xe8, sizeof(long))
+            var trainerInfo = ReadBytesAbsolute(baseAddress + 0xe8, sizeof(uint))
                 .Reverse()
                 .ToUlong();
 
-            var tid = (ushort)(trainerInfo >> 16);
-            var sid = (ushort)trainerInfo;
+            var sid = (ushort)(trainerInfo >> 16);
+            var tid = (ushort)trainerInfo;
 
             return (tid, sid);
         }
