@@ -1,11 +1,13 @@
 namespace PokeNX.Core
 {
     using System;
+    using System.Collections.Generic;
     using System.Linq;
     using System.Net;
     using Extensions;
     using Models;
     using Models.Enums;
+    using PKHeX.Core;
     using static Models.Enums.Game;
     using static Utils.DiamondPearlOffsets;
 
@@ -86,7 +88,56 @@ namespace PokeNX.Core
             };
         }
 
+        public (uint EC, uint PID) GetWild()
+        {
+            var tmp = GetBattleSetupAddress();
+
+            var addresses = new ulong[] { 0x58, 0x28, 0x10, 0x20, 0x20, 0x18 };
+            tmp = addresses.Aggregate(tmp, (current, addition) => BitConverter.ToUInt64(ReadBytesAbsolute(current + addition, sizeof(ulong))));
+
+            var result = ReadBytesAbsolute(tmp + 0x20, 0x148);
+
+            var pk = new PK8(result);
+
+            return (pk.EncryptionConstant, pk.PID);
+        }
+
+        public IEnumerable<(Roamer Roamer, ulong Seed)> GetRoamers()
+        {
+            var roamersList = BitConverter.ToUInt64(ReadBytesAbsolute(GetPlayerPrefsProvider() + 0x2a0, sizeof(ulong)));
+            var readSize = BitConverter.ToUInt32(ReadBytesAbsolute(roamersList + 0x18, sizeof(uint)));
+
+            var size = Math.Min(readSize, 10);
+
+            for (ulong i = 0; i < size; i++)
+            {
+                var roamer = ReadBytesAbsolute(roamersList + 0x20 + (0x20 * i), 0x20);
+
+                var indexes = new[,]
+                {
+                    { 0, 4 }, // Area ID
+                    { 4, 8 }, // RNG Seed
+                    { 12, 4 }, // Species
+                    { 16, 4 }, // HP
+                    { 20, 1 } // Level
+                };
+
+                //var areaIdBytes = roamer.Skip(indexes[0, 0]).Take(indexes[0, 1]).ToArray();
+                var seedBytes = roamer.Skip(indexes[1, 0]).Take(indexes[1, 1]).ToArray();
+                var speciesBytes = roamer.Skip(indexes[2, 0]).Take(indexes[2, 1]).ToArray();
+                //var hpBytes = roamer.Skip(indexes[3, 0]).Take(indexes[3, 1]).ToArray();
+                //var levelBytes = roamer.Skip(indexes[4, 0]).Take(indexes[4, 1]).ToArray();
+
+                var seed = BitConverter.ToUInt64(seedBytes);
+                var species = (Roamer)BitConverter.ToUInt32(speciesBytes);
+
+                yield return (species, seed);
+            }
+        }
+
         private ulong GetDayCareAddress() => GetPlayerPrefsProvider() + 0x460;
+
+        private ulong GetBattleSetupAddress() { return ReadBytesAbsolute(GetPlayerPrefsProvider() + 0x7e8, sizeof(ulong)).Reverse().ToUlong(); }
 
         private ulong GetPlayerPrefsProvider()
         {

@@ -10,7 +10,7 @@
     using ReactiveUI;
     using Utils;
 
-    public class Gen8StationaryViewModel : ViewModelBase
+    public class Gen8LegendaryViewModel : ViewModelBase
     {
         private readonly DiamondPearlService _diamondPearlService;
 
@@ -18,14 +18,11 @@
 
         public ObservableCollection<GenerateTableResult> Results { get; set; } = new();
 
-        private uint _initialAdvances;
+        private uint _initialAdvances = 64;
         public uint InitialAdvances { get => _initialAdvances; set => this.RaiseAndSetIfChanged(ref _initialAdvances, value); }
 
         private uint _maximumAdvances = 10_000;
         public uint MaximumAdvances { get => _maximumAdvances; set => this.RaiseAndSetIfChanged(ref _maximumAdvances, value); }
-
-        private uint _delay;
-        public uint Delay { get => _delay; set => this.RaiseAndSetIfChanged(ref _delay, value); }
 
         private ulong _seed0;
         public ulong Seed0 { get => _seed0; set => this.RaiseAndSetIfChanged(ref _seed0, value); }
@@ -35,6 +32,18 @@
 
         private FilterStats _filterStats = new();
         public FilterStats FilterStats { get => _filterStats; set => this.RaiseAndSetIfChanged(ref _filterStats, value); }
+
+        private ulong _encounterEC;
+        public ulong EncounterEC { get => _encounterEC; set => this.RaiseAndSetIfChanged(ref _encounterEC, value); }
+
+        private ulong _encounterPID;
+        public ulong EncounterPID { get => _encounterPID; set => this.RaiseAndSetIfChanged(ref _encounterPID, value); }
+
+        private uint _targetAdvances;
+        public uint TargetAdvances { get => _targetAdvances; set => this.RaiseAndSetIfChanged(ref _targetAdvances, value); }
+
+        private int _advancesLeft;
+        public int AdvancesLeft { get => _advancesLeft; set => this.RaiseAndSetIfChanged(ref _advancesLeft, value); }
 
         private string _errorText = string.Empty;
         public string ErrorText
@@ -49,9 +58,12 @@
 
         public bool HasError => !string.IsNullOrWhiteSpace(ErrorText);
 
+        private bool _set3IVs = true;
+        public bool Set3IVs { get => _set3IVs; set => this.RaiseAndSetIfChanged(ref _set3IVs, value); }
+
         #endregion
 
-        public Gen8StationaryViewModel(DiamondPearlService diamondPearlService)
+        public Gen8LegendaryViewModel(DiamondPearlService diamondPearlService)
         {
             _diamondPearlService = diamondPearlService;
 
@@ -62,9 +74,22 @@
             });
 
             OnGenerateCommand = ReactiveCommand.Create(GenerateExecute);
+            OnEncounterDetailsCommand = ReactiveCommand.Create(EncounterDetailsExecute);
         }
 
         public ReactiveCommand<Unit, Unit> OnGenerateCommand { get; }
+
+        public ReactiveCommand<Unit, Unit> OnEncounterDetailsCommand { get; }
+
+        private void EncounterDetailsExecute()
+        {
+            //var roamers = _diamondPearlService.GetRoamers();
+
+            var (ec, pid) = _diamondPearlService.GetWild();
+
+            EncounterEC = ec;
+            EncounterPID = pid;
+        }
 
         private void GenerateExecute()
         {
@@ -91,6 +116,7 @@
                     MaxIVs = FilterStats.MaximumValues,
                     Shiny = KeyValues.Shinies[FilterStats.Shiny].Key
                 },
+                SetIVs = Set3IVs
             };
 
             var stationaryGenerator8 = new StationaryGenerator8(InitialAdvances, MaximumAdvances);

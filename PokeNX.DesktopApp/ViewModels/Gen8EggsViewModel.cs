@@ -82,13 +82,13 @@
 
         public IEnumerable<string> Items { get; set; } = new[] { "None", "Everstone", "Destiny Knot" };
 
-        private ushort TID;
+        private ushort _tid;
 
-        private ushort SID;
+        private ushort _sid;
 
-        private bool OvalCharm;
+        private bool _ovalCharm;
 
-        private bool ShinyCharm;
+        private bool _shinyCharm;
 
         #endregion
 
@@ -104,10 +104,10 @@
 
             EventAggregator.RegisterHandler<ProfileMessage>(message =>
             {
-                if (message.TID.HasValue) TID = message.TID.Value;
-                if (message.SID.HasValue) SID = message.SID.Value;
-                if (message.OvalCharm.HasValue) OvalCharm = message.OvalCharm.Value;
-                if (message.ShinyCharm.HasValue) ShinyCharm = message.ShinyCharm.Value;
+                if (message.TID.HasValue) _tid = message.TID.Value;
+                if (message.SID.HasValue) _sid = message.SID.Value;
+                if (message.OvalCharm.HasValue) _ovalCharm = message.OvalCharm.Value;
+                if (message.ShinyCharm.HasValue) _shinyCharm = message.ShinyCharm.Value;
             });
 
             OnGenerateCommand = ReactiveCommand.Create(GenerateExecute);
@@ -137,14 +137,14 @@
             if (ReorderParents(ParentA.Gender, ParentB.Gender))
                 (ParentA, ParentB) = (ParentB, ParentA);
 
-            var compatibility = GetCompatibility(Compatibility, OvalCharm);
+            var compatibility = GetCompatibility(Compatibility, _ovalCharm);
             var natureFilter = KeyValues.NaturesFilter[FilterStats.Nature].Key;
             var genderRatio = KeyValues.GenderRatio[FilterStats.GenderRatio].Key;
 
             var request = new Egg8Request
             {
-                TrainerId = TID,
-                SecretId = SID,
+                TrainerId = _tid,
+                SecretId = _sid,
                 ParentA = ParentA,
                 ParentB = ParentB,
                 GenderRatio = genderRatio,
@@ -166,7 +166,7 @@
                     Shiny = KeyValues.Shinies[FilterStats.Shiny].Key
                 },
                 IsMasuda = Masuda,
-                IsShinyCharm = ShinyCharm,
+                IsShinyCharm = _shinyCharm,
                 Compatibility = compatibility
             };
 

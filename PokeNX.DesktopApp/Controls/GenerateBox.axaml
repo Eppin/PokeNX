@@ -19,10 +19,6 @@
         <NumericUpDown Value="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type UserControl}}, Path=MaximumAdvances, Mode=TwoWay}" Minimum="0"/>
         <Separator BorderBrush="DarkGray" BorderThickness="0.4"/>
 
-        <TextBlock>Delay</TextBlock>
-        <NumericUpDown Value="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type UserControl}}, Path=Delay, Mode=TwoWay}" Minimum="0"/>
-        <Separator BorderBrush="DarkGray" BorderThickness="0.4"/>
-
 		<TextBlock>Seed 0</TextBlock>
         <TextBox Text="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type UserControl}}, Path=Seed0, Mode=TwoWay, Converter={StaticResource HexConverter}}"/>
         <Separator BorderBrush="DarkGray" BorderThickness="0.4"/>
