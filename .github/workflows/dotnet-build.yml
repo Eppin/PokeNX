@@ -1,0 +1,80 @@
+name: .NET Desktop
+
+on:
+  push:
+    branches: [ "main", "develop" ]
+    tags-ignore: [ "**" ]
+  pull_request:
+    branches: [ "main", "develop" ]
+
+jobs:
+  build:
+    runs-on: windows-latest
+    
+    permissions:
+      contents: write
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v3
+      with:
+        fetch-depth: 0
+
+    - name: Install .NET Core
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: |
+          6.0.x
+          7.0.x
+          8.0.x
+
+    - name: Restore packages
+      run: dotnet restore
+
+    # Get current date for release naming
+    - name: Get current date
+      id: date
+      run: echo "DATE=$(date +'%y.%m.%d')" >> $ENV:GITHUB_OUTPUT
+
+    # Build applications
+    - name: Build for Windows x64
+      uses: ./.github/actions/app-build
+      with:
+        dotnet: 'net6.0-windows'
+        platform: 'win-x64'
+        project: 'PokeNX.DesktopApp'
+        artifact: 'windows-x64'
+        version: '${{ steps.date.outputs.DATE }}.${{ github.run_number }}'
+
+    - name: Build for macOS arm64
+      uses: ./.github/actions/app-build
+      with:
+        dotnet: 'net6.0'
+        platform: 'osx-arm64'
+        project: 'PokeNX.DesktopApp'
+        artifact: 'macos-arm64'
+        version: '${{ steps.date.outputs.DATE }}.${{ github.run_number }}'
+
+    # Create pre-release
+    - name: Pre-Release 
+      uses: softprops/action-gh-release@v1
+      if: ${{ github.event_name != 'pull_request' && github.ref == 'refs/heads/develop' }}
+      with:
+        tag_name: ${{ steps.date.outputs.DATE }}.${{ github.run_number }}
+        prerelease: true
+        body: Pre-release, compare Git commits.
+        files: |
+          windows-x64.zip
+          macos-arm64.zip
+
+    # Create release
+    - name: Release 
+      uses: softprops/action-gh-release@v1
+      if: ${{ github.event_name != 'pull_request' && github.ref == 'refs/heads/main' }}
+      with:
+        tag_name: ${{ steps.date.outputs.DATE }}.${{ github.run_number }}
+        prerelease: false
+        body: Release, compare Git commits.
+        files: |
+          windows-x64.zip
+          macos-arm64.zip
