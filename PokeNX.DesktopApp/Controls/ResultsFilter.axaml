@@ -1,0 +1,66 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:controls="clr-namespace:PokeNX.DesktopApp.Controls"
+             mc:Ignorable="d"
+             x:Class="PokeNX.DesktopApp.Controls.ResultsFilter">
+
+    <StackPanel Spacing="10">
+        <Grid ColumnDefinitions="0.2*,*" RowDefinitions="*,*,*,*,*,*">
+            <Grid.Styles>
+                <Style Selector="NumericUpDown">
+                    <Setter Property="Margin" Value="2" />
+                </Style>
+            </Grid.Styles>
+
+            <TextBlock Grid.Column="0" Grid.Row="0" Text="HP" VerticalAlignment="Center"/>
+            <controls:StatRange Grid.Column="1" Grid.Row="0" MinValue="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type UserControl}}, Path=FilterStats.HP.Minimum}" MaxValue="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type UserControl}}, Path=FilterStats.HP.Maximum}"/>
+
+            <TextBlock Grid.Column="0" Grid.Row="1" Text="Atk" VerticalAlignment="Center"/>
+            <controls:StatRange Grid.Column="1" Grid.Row="1" MinValue="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type UserControl}}, Path=FilterStats.Atk.Minimum}" MaxValue="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type UserControl}}, Path=FilterStats.Atk.Maximum}"/>
+
+            <TextBlock Grid.Column="0" Grid.Row="2" Text="Def" VerticalAlignment="Center"/>
+            <controls:StatRange Grid.Column="1" Grid.Row="2" MinValue="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type UserControl}}, Path=FilterStats.Def.Minimum}" MaxValue="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type UserControl}}, Path=FilterStats.Def.Maximum}"/>
+
+            <TextBlock Grid.Column="0" Grid.Row="3" Text="SpA" VerticalAlignment="Center"/>
+            <controls:StatRange Grid.Column="1" Grid.Row="3" MinValue="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type UserControl}}, Path=FilterStats.SpA.Minimum}" MaxValue="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type UserControl}}, Path=FilterStats.SpA.Maximum}"/>
+
+            <TextBlock Grid.Column="0" Grid.Row="4" Text="SpD" VerticalAlignment="Center"/>
+            <controls:StatRange Grid.Column="1" Grid.Row="4" MinValue="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type UserControl}}, Path=FilterStats.SpD.Minimum}" MaxValue="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type UserControl}}, Path=FilterStats.SpD.Maximum}"/>
+
+            <TextBlock Grid.Column="0" Grid.Row="5" Text="Spe" VerticalAlignment="Center"/>
+            <controls:StatRange Grid.Column="1" Grid.Row="5" MinValue="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type UserControl}}, Path=FilterStats.Speed.Minimum}" MaxValue="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type UserControl}}, Path=FilterStats.Speed.Maximum}"/>
+        </Grid>
+
+        <Separator BorderBrush="DarkGray" BorderThickness="0.4"/>
+
+        <StackPanel Spacing="10">
+            <StackPanel Orientation="Horizontal">
+                <TextBlock MinWidth="100" VerticalAlignment="Center">Gender Ratio</TextBlock>
+                <ComboBox Width="200" Items="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type UserControl}}, Path=GendersRatioFilter}" SelectedIndex="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type UserControl}}, Path=FilterStats.GenderRatio}"/>
+            </StackPanel>
+            <Separator BorderBrush="DarkGray" BorderThickness="0.4"/>
+            <StackPanel Orientation="Horizontal">
+                <TextBlock MinWidth="100" VerticalAlignment="Center">Gender</TextBlock>
+                <ComboBox Width="200" Items="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type UserControl}}, Path=GendersFilter}" SelectedIndex="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type UserControl}}, Path=FilterStats.Gender}"/>
+            </StackPanel>
+            <Separator BorderBrush="DarkGray" BorderThickness="0.4"/>
+            <StackPanel Orientation="Horizontal">
+                <TextBlock MinWidth="100" VerticalAlignment="Center">Ability</TextBlock>
+                <ComboBox Width="200" Items="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type UserControl}}, Path=AbilitiesFilter}" SelectedIndex="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type UserControl}}, Path=FilterStats.Ability}"/>
+            </StackPanel>
+            <Separator BorderBrush="DarkGray" BorderThickness="0.4"/>
+            <StackPanel Orientation="Horizontal">
+                <TextBlock MinWidth="100" VerticalAlignment="Center">Nature</TextBlock>
+                <ComboBox Width="200" Items="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type UserControl}}, Path=NaturesFilter}" SelectedIndex="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type UserControl}}, Path=FilterStats.Nature}"/>
+            </StackPanel>
+            <Separator BorderBrush="DarkGray" BorderThickness="0.4"/>
+            <StackPanel Orientation="Horizontal">
+                <TextBlock MinWidth="100" VerticalAlignment="Center">Shiny</TextBlock>
+                <ComboBox Width="200" Items="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type UserControl}}, Path=Shinies}" SelectedIndex="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type UserControl}}, Path=FilterStats.Shiny}"/>
+            </StackPanel>
+        </StackPanel>
+    </StackPanel>
+
+</UserControl>

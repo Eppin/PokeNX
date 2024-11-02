@@ -1,0 +1,37 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.31911.196
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PokeNX.Core", "PokeNX.Core\PokeNX.Core.csproj", "{709DC550-CC24-4634-BD4E-BA118D367119}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PokeNX.ConsoleApp", "PokeNX.ConsoleApp\PokeNX.ConsoleApp.csproj", "{30C5F430-65A5-435B-BCDC-DF59D3E37685}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PokeNX.DesktopApp", "PokeNX.DesktopApp\PokeNX.DesktopApp.csproj", "{D9D2D573-D04E-45CE-B6C7-BB8548B1648E}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{709DC550-CC24-4634-BD4E-BA118D367119}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{709DC550-CC24-4634-BD4E-BA118D367119}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{709DC550-CC24-4634-BD4E-BA118D367119}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{709DC550-CC24-4634-BD4E-BA118D367119}.Release|Any CPU.Build.0 = Release|Any CPU
+		{30C5F430-65A5-435B-BCDC-DF59D3E37685}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{30C5F430-65A5-435B-BCDC-DF59D3E37685}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{30C5F430-65A5-435B-BCDC-DF59D3E37685}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{30C5F430-65A5-435B-BCDC-DF59D3E37685}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D9D2D573-D04E-45CE-B6C7-BB8548B1648E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D9D2D573-D04E-45CE-B6C7-BB8548B1648E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D9D2D573-D04E-45CE-B6C7-BB8548B1648E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D9D2D573-D04E-45CE-B6C7-BB8548B1648E}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {B5D5EBE5-B5C5-434E-8C8F-9333F7AB7395}
+	EndGlobalSection
+EndGlobal
