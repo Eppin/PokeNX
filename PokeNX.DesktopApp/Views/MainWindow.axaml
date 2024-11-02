@@ -1,0 +1,78 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:PokeNX.DesktopApp.ViewModels"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:views="clr-namespace:PokeNX.DesktopApp.Views"
+        mc:Ignorable="d" d:DesignWidth="1500" d:DesignHeight="750"
+        x:Class="PokeNX.DesktopApp.Views.MainWindow"
+        Icon="/Assets/avalonia-logo.ico"
+        Title="PokeNX.DesktopApp"
+        TransparencyLevelHint="AcrylicBlur"
+        Background="Transparent"
+        ExtendClientAreaToDecorationsHint="True">
+
+    <Design.DataContext>
+        <vm:MainWindowViewModel/>
+    </Design.DataContext>
+
+    <Panel>
+        <ExperimentalAcrylicBorder IsHitTestVisible="False">
+            <ExperimentalAcrylicBorder.Material>
+                <ExperimentalAcrylicMaterial
+                    BackgroundSource="Digger"
+                    TintColor="Black"
+                    TintOpacity="1"
+                    MaterialOpacity="0.65" />
+            </ExperimentalAcrylicBorder.Material>
+        </ExperimentalAcrylicBorder>
+
+        <Grid Margin="10, 20" ColumnDefinitions="*" RowDefinitions="Auto,Auto,*">
+            <StackPanel Grid.Row="0" Orientation="Horizontal" HorizontalAlignment="Center" Spacing="10" Margin="5">
+                <TextBlock Text="IP Address:" VerticalAlignment="Center"/>
+                <TextBox Width="130" Text="{Binding IPAddress}"/>
+                <NumericUpDown Value="{Binding Port}" Minimum="0" ShowButtonSpinner="False"/>
+                
+                <TextBlock Text="Seed0:" VerticalAlignment="Center"/>
+                <TextBox Width="160" Text="{Binding Seed0, StringFormat={}{0:X16}, Mode=OneWay}"/>
+                
+                <TextBlock Text="Seed1:" VerticalAlignment="Center"/>
+                <TextBox Width="160" Text="{Binding Seed1, StringFormat={}{0:X16}, Mode=OneWay}"/>
+                
+                <TextBlock Text="Advances:" VerticalAlignment="Center"/>
+                <TextBox Width="80" Text="{Binding Advances, Mode=OneWay}"/>
+                
+                <Button Command="{Binding OnConnectCommand}" Content="{Binding ConnectionString}"/>
+                <Button Command="{Binding OnUseSeedCommand}" Content="Use Seed" IsEnabled="{Binding IsConnected}"/>
+            </StackPanel>
+
+            <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Center" Spacing="10" Margin="5">
+                <TextBlock Text="Game:" VerticalAlignment="Center"/>
+                <TextBox Text="{Binding ConnectedGame.Game}" Width="150" HorizontalContentAlignment="Center" IsEnabled="False"/>
+
+                <TextBlock Text="TID:" VerticalAlignment="Center"/>
+                <TextBox Text="{Binding ConnectedGame.TID}" Width="65" IsEnabled="False"/>
+
+                <TextBlock Text="SID:" VerticalAlignment="Center"/>
+                <TextBox Text="{Binding ConnectedGame.SID}" Width="65" IsEnabled="False"/>
+
+                <TextBlock Text="Shiny Charm:" VerticalAlignment="Center"/>
+                <CheckBox IsChecked="{Binding ConnectedGame.HasShinyCharm}" IsEnabled="False"/>
+
+                <TextBlock Text="Oval Charm:" VerticalAlignment="Center"/>
+                <CheckBox IsChecked="{Binding ConnectedGame.HasOvalCharm}" IsEnabled="False"/>
+            </StackPanel>
+
+            <TabControl Grid.Row="2">
+				<TabItem Header="Eggs">
+                    <views:Gen8Eggs DataContext="{Binding Gen8EggsViewModel}"/>
+                </TabItem>
+
+                <TabItem Header="Stationary">
+                    <views:Gen8Stationary DataContext="{Binding Gen8StationaryViewModel}"/>
+                </TabItem>
+            </TabControl>
+        </Grid>
+    </Panel>
+
+</Window>
