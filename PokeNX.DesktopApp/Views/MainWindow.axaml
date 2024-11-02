@@ -57,10 +57,10 @@
                 <TextBox Text="{Binding ConnectedGame.SID}" Width="65" IsEnabled="False"/>
 
                 <TextBlock Text="Shiny Charm:" VerticalAlignment="Center"/>
-                <CheckBox IsChecked="{Binding ConnectedGame.HasShinyCharm}" IsEnabled="False"/>
+                <CheckBox IsChecked="{Binding ConnectedGame.HasShinyCharm}"/>
 
                 <TextBlock Text="Oval Charm:" VerticalAlignment="Center"/>
-                <CheckBox IsChecked="{Binding ConnectedGame.HasOvalCharm}" IsEnabled="False"/>
+                <CheckBox IsChecked="{Binding ConnectedGame.HasOvalCharm}"/>
             </StackPanel>
 
             <TabControl Grid.Row="2">

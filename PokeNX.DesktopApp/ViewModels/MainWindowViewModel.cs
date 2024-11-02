@@ -6,6 +6,7 @@ namespace PokeNX.DesktopApp.ViewModels
     using Core.RNG;
     using Models;
     using ReactiveUI;
+    using Utils;
 
     public class MainWindowViewModel : ViewModelBase
     {
@@ -100,6 +101,8 @@ namespace PokeNX.DesktopApp.ViewModels
                     SID = sid
                 };
 
+                EventAggregator.PostMessage(new ProfileMessage(tid, sid));
+
                 IsConnected = true;
 
                 _cancellationTokenSource = new CancellationTokenSource();
@@ -111,7 +114,9 @@ namespace PokeNX.DesktopApp.ViewModels
 
         private void OnUseSeedExecute()
         {
-            // TODO.. Notifier pattern
+            EventAggregator.PostMessage(new UseSeedMessage(Seed0, Seed1));
+
+            Advances = 0;
         }
 
         private void CalulateMainRNG(CancellationToken cts)

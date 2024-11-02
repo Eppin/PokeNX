@@ -56,6 +56,9 @@
         private int _advancesLeft;
         public int AdvancesLeft { get => _advancesLeft; set => this.RaiseAndSetIfChanged(ref _advancesLeft, value); }
 
+        private bool _masuda = true;
+        public bool Masuda { get => _masuda; set => this.RaiseAndSetIfChanged(ref _masuda, value); }
+
         private string _errorText = string.Empty;
         public string ErrorText
         {
@@ -79,11 +82,33 @@
 
         public IEnumerable<string> Items { get; set; } = new[] { "None", "Everstone", "Destiny Knot" };
 
+        private ushort TID;
+
+        private ushort SID;
+
+        private bool OvalCharm;
+
+        private bool ShinyCharm;
+
         #endregion
 
         public Gen8EggsViewModel(DiamondPearlService diamondPearlService)
         {
             _diamondPearlService = diamondPearlService;
+
+            EventAggregator.RegisterHandler<UseSeedMessage>(message =>
+            {
+                Seed0 = message.Seed0;
+                Seed1 = message.Seed1;
+            });
+
+            EventAggregator.RegisterHandler<ProfileMessage>(message =>
+            {
+                if (message.TID.HasValue) TID = message.TID.Value;
+                if (message.SID.HasValue) SID = message.SID.Value;
+                if (message.OvalCharm.HasValue) OvalCharm = message.OvalCharm.Value;
+                if (message.ShinyCharm.HasValue) ShinyCharm = message.ShinyCharm.Value;
+            });
 
             OnGenerateCommand = ReactiveCommand.Create(GenerateExecute);
             OnDayCareDetailsCommand = ReactiveCommand.Create(EggDetailsExecute);
@@ -112,14 +137,14 @@
             if (ReorderParents(ParentA.Gender, ParentB.Gender))
                 (ParentA, ParentB) = (ParentB, ParentA);
 
-            var compatibility = GetCompatibility(Compatibility, false); // TODO OvalCharm in a profile?
+            var compatibility = GetCompatibility(Compatibility, OvalCharm);
             var natureFilter = KeyValues.NaturesFilter[FilterStats.Nature].Key;
             var genderRatio = KeyValues.GenderRatio[FilterStats.GenderRatio].Key;
 
             var request = new Egg8Request
             {
-                TrainerId = 64785, // TODO TID in a profile? 
-                SecretId = 18176, // TODO SID in a profile?
+                TrainerId = TID,
+                SecretId = SID,
                 ParentA = ParentA,
                 ParentB = ParentB,
                 GenderRatio = genderRatio,
@@ -140,7 +165,8 @@
                     MaxIVs = FilterStats.MaximumValues,
                     Shiny = KeyValues.Shinies[FilterStats.Shiny].Key
                 },
-                IsMasuda = true,
+                IsMasuda = Masuda,
+                IsShinyCharm = ShinyCharm,
                 Compatibility = compatibility
             };
 
