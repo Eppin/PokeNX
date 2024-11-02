@@ -124,6 +124,7 @@ public class DiamondPearlService : SysBotService
 
     public Wild GetWild()
     {
+        // Other overworld NPCs(?)
         WriteBytesMain(0x1788804, BitConverter.GetBytes(0xd503201f));
         WriteBytesMain(0x1d56d00, BitConverter.GetBytes(0xd503201f));
         WriteBytesMain(0x1d56d58, BitConverter.GetBytes(0xd503201f));
@@ -134,11 +135,13 @@ public class DiamondPearlService : SysBotService
         WriteBytesMain(0x1d56b68, BitConverter.GetBytes(0xd503201f));
         WriteBytesMain(0x1dae1a4, BitConverter.GetBytes(0xd503201f));
 
+        // Pokemon NPC and water (works for Shaymin)
         WriteBytesMain(0x1db8b7c, BitConverter.GetBytes(0xd503201f));
         WriteBytesMain(0x17d11a0, BitConverter.GetBytes(0xd503201f));
         WriteBytesMain(0x17d11d8, BitConverter.GetBytes(0xd503201f));
         WriteBytesMain(0x17d1210, BitConverter.GetBytes(0xd503201f));
         WriteBytesMain(0x17d1240, BitConverter.GetBytes(0xd503201f));
+        
         //
         var tmp = GetBattleSetupAddress();
 
