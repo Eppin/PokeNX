@@ -12,6 +12,10 @@ using static Models.Enums.SwitchOffset;
 
 public abstract class SysBotService
 {
+    private const int MaximumTransferSize = 0x1C0;
+    private const int BaseDelay = 1;
+    private const int DelayFactor = 1000;
+
     private readonly Socket _connection = new(SocketType.Stream, ProtocolType.Tcp);
     private readonly object _lock = new();
 
@@ -117,6 +121,32 @@ public abstract class SysBotService
             return buffer;
         }
     }
+
+    public void WriteBytesMain(ulong offset, byte[] data) => WriteBytes(offset, data, Main);
+    public void WriteBytesHeap(ulong offset, byte[] data) => WriteBytes(offset, data, Heap);
+    public void WriteBytesAbsolute(ulong offset, byte[] data) => WriteBytes(offset, data, Absolute);
+
+    private void WriteBytes(ulong offset, byte[] data, SwitchOffset type)
+    {
+        lock (_lock)
+        {
+            var method = type.GetWriteMethod();
+            if (data.Length <= MaximumTransferSize)
+            {
+                _connection.Send(method(offset, data));
+                return;
+            }
+
+            for (var i = 0; i < data.Length; i += MaximumTransferSize)
+            {
+                var slice = data.SliceSafe(i, MaximumTransferSize);
+                _connection.Send(method(offset + (uint)i, slice));
+
+                Thread.Sleep((MaximumTransferSize / DelayFactor) + BaseDelay);
+            }
+        }
+    }
+
 
     protected async Task Click(SwitchButton button, int delay, CancellationToken token = default)
     {

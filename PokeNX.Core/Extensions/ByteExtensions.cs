@@ -21,6 +21,18 @@ public static class ByteExtensions
         return result;
     }
 
+    public static byte[] SliceSafe(this byte[] src, int offset, int length)
+    {
+        var delta = src.Length - offset;
+        if (delta < length)
+            length = delta;
+
+        var data = new byte[length];
+        Buffer.BlockCopy(src, offset, data, 0, data.Length);
+
+        return data;
+    }
+
     private static byte DecodeTuple(char _0, char _1)
     {
         byte result;

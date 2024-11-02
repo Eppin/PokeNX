@@ -15,6 +15,15 @@ internal static class SwitchCommand
     public static byte[] Peek(uint offset, int count) => Encode($"peek 0x{offset:X8} {count}");
 
     /// <summary>
+    /// Sends the Bot <see cref="data"/> to be written to <see cref="offset"/>.
+    /// </summary>
+    /// <param name="offset">Address of the data</param>
+    /// <param name="data">Data to write</param>
+    /// <returns>Encoded command bytes</returns>
+    public static byte[] Poke(uint offset, IEnumerable<byte> data) => Encode($"poke 0x{offset:X8} 0x{string.Concat(data.Select(z => $"{z:X2}"))}");
+
+
+    /// <summary>
     /// Requests the Bot to send <see cref="count"/> bytes from absolute <see cref="offset"/>.
     /// </summary>
     /// <param name="offset">Absolute address of the data</param>
@@ -23,12 +32,30 @@ internal static class SwitchCommand
     public static byte[] PeekAbsolute(ulong offset, int count) => Encode($"peekAbsolute 0x{offset:X16} {count}");
 
     /// <summary>
+    /// Sends the Bot <see cref="data"/> to be written to absolute <see cref="offset"/>.
+    /// </summary>
+    /// <param name="offset">Absolute address of the data</param>
+    /// <param name="data">Data to write</param>
+    /// <returns>Encoded command bytes</returns>
+    public static byte[] PokeAbsolute(ulong offset, IEnumerable<byte> data) => Encode($"pokeAbsolute 0x{offset:X16} 0x{string.Concat(data.Select(z => $"{z:X2}"))}");
+
+    /// <summary>
     /// Requests the Bot to send <see cref="count"/> bytes from main <see cref="offset"/>.
     /// </summary>
     /// <param name="offset">Address of the data relative to main</param>
     /// <param name="count">Amount of bytes</param>
     /// <returns>Encoded command bytes</returns>
     public static byte[] PeekMain(ulong offset, int count) => Encode($"peekMain 0x{offset:X16} {count}");
+
+    /// <summary>
+    /// Sends the Bot <see cref="data"/> to be written to main <see cref="offset"/>.
+    /// </summary>
+    /// <param name="offset">Main NSO address of the data</param>
+    /// <param name="data">Data to write</param>
+    /// <returns>Encoded command bytes</returns>
+    public static byte[] PokeMain(ulong offset, IEnumerable<byte> data) => Encode($"pokeMain 0x{offset:X16} 0x{string.Concat(data.Select(z => $"{z:X2}"))}");
+
+
 
     /// <summary>
     /// Retrieves <see cref="size"/> bytes from pointer <see cref="pointer"/>
