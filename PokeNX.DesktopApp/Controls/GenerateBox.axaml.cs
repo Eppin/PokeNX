@@ -6,7 +6,9 @@ namespace PokeNX.DesktopApp.Controls
     using Avalonia.Controls;
     using Avalonia.Data;
     using Avalonia.Markup.Xaml;
+    using Models;
     using ReactiveUI;
+    using Utils;
 
     public partial class GenerateBox : UserControl
     {
@@ -132,12 +134,40 @@ namespace PokeNX.DesktopApp.Controls
             set => SetAndRaise(GenerateCommandProperty, ref _generateCommand, value);
         }
 
-        public bool ShowCompatibilities => Compatibility != null;
+        public static readonly DirectProperty<GenerateBox, bool> ShowCompatibilitiesProperty =
+            AvaloniaProperty.RegisterDirect<GenerateBox, bool>(
+                nameof(ShowCompatibilities),
+                o => o.ShowCompatibilities,
+                (o, v) => o.ShowCompatibilities = v,
+                default!,
+                BindingMode.TwoWay,
+                true);
 
-        public bool ShowGenerators => Generator != null;
+        private bool _showCompatibilities;
+        public bool ShowCompatibilities
+        {
+            get => _showCompatibilities;
+            set => SetAndRaise(ShowCompatibilitiesProperty, ref _showCompatibilities, value);
+        }
+
+        public static readonly DirectProperty<GenerateBox, bool> ShowGeneratorsProperty =
+            AvaloniaProperty.RegisterDirect<GenerateBox, bool>(
+                nameof(ShowGenerators),
+                o => o.ShowGenerators,
+                (o, v) => o.ShowGenerators = v,
+                default!,
+                BindingMode.TwoWay,
+                true);
+
+        private bool _showGenerators;
+        public bool ShowGenerators
+        {
+            get => _showGenerators;
+            set => SetAndRaise(ShowGeneratorsProperty, ref _showGenerators, value);
+        }
 
         public static IEnumerable<string> Compatibilities => new[] { "The two don't seem to like each other", "The two seem to get along", "The two seem to get along very well" };
 
-        public static IEnumerable<string> Generators => new[] { "Stationary", "Roamer", "Event" };
+        public static IEnumerable<KeyValue<Generator, string>> Generators => KeyValues.Generators;
     }
 }

@@ -7,6 +7,8 @@
     {
         public Game Game { get; set; } = Game.None;
 
+        public Version Version { get; set; } = Version.Unknown;
+
         public uint TID { get; set; }
 
         public uint SID { get; set; }
