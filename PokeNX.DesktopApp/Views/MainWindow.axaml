@@ -1,0 +1,55 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:PokeNX.DesktopApp.ViewModels"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:views="clr-namespace:PokeNX.DesktopApp.Views"
+        mc:Ignorable="d" d:DesignWidth="1400" d:DesignHeight="650"
+        x:Class="PokeNX.DesktopApp.Views.MainWindow"
+        Icon="/Assets/avalonia-logo.ico"
+        Title="PokeNX.DesktopApp"
+        TransparencyLevelHint="AcrylicBlur"
+        Background="Transparent"
+        ExtendClientAreaToDecorationsHint="True">
+
+	<Design.DataContext>
+		<vm:MainWindowViewModel/>
+	</Design.DataContext>
+
+	<Panel>
+		<ExperimentalAcrylicBorder IsHitTestVisible="False">
+			<ExperimentalAcrylicBorder.Material>
+				<ExperimentalAcrylicMaterial
+                    BackgroundSource="Digger"
+                    TintColor="Black"
+                    TintOpacity="1"
+                    MaterialOpacity="0.65" />
+			</ExperimentalAcrylicBorder.Material>
+		</ExperimentalAcrylicBorder>
+
+		<Grid Margin="10, 20" ColumnDefinitions="*" RowDefinitions="Auto,*">
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Spacing="10">
+				<TextBlock Text="Seed0"/>
+                <TextBox Width="160" Text="{Binding Seed0, StringFormat={}{0:X16}, Mode=OneWay}"/>
+                <TextBlock Text="Seed1"/>
+                <TextBox Width="160" Text="{Binding Seed1, StringFormat={}{0:X16}, Mode=OneWay}"/>
+                <TextBlock Text="Advances"/>
+                <TextBox Width="80" Text="{Binding Advances, Mode=OneWay}"/>
+				<Button Click="Button_OnClick" Content="Connect"/>
+				<Button Click="Button1_OnClick" Content="Use Seed"/>
+
+                <TextBlock Text="EggSeed"/>
+                <TextBox Width="90" Text="{Binding EggSeed, StringFormat={}{0:X8}, Mode=OneWay}"/>
+                <TextBlock Text="Step Count"/>
+                <TextBox Width="40" Text="{Binding StepCount, Mode=OneWay}"/>
+            </StackPanel>
+
+            <TabControl Grid.Row="1">
+				<TabItem Header="Eggs">
+					<views:Gen8Eggs DataContext="{Binding Gen8EggsViewModel}"/>
+				</TabItem>
+			</TabControl>
+		</Grid>
+    </Panel>
+
+</Window>
