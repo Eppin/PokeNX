@@ -12,6 +12,10 @@ namespace PokeNX.Core.Models
 
         public uint EC { get; set; }
 
+        public int EncounterSlot { get; set; }
+
+        public HeldItem HeldItem { get; set; }
+
         public Shiny Shiny { get; set; }
 
         public Nature Nature { get; set; }

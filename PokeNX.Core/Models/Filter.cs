@@ -13,9 +13,9 @@ namespace PokeNX.Core.Models
 
         public ShinyFilter Shiny { get; set; }
 
-        public byte[]? MinIVs { get; set; }
+        public byte[] MinIVs { get; set; }
 
-        public byte[]? MaxIVs { get; set; }
+        public byte[] MaxIVs { get; set; }
 
         public IEnumerable<NatureFilter> Natures { get; set; }
 
@@ -39,9 +39,6 @@ namespace PokeNX.Core.Models
 
         public bool CompareIVs(byte[] ivs)
         {
-            if (MinIVs == null || MaxIVs == null)
-                return true;
-
             for (var i = 0; i < 6; i++)
             {
                 var iv = ivs[i];

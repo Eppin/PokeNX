@@ -51,9 +51,11 @@
         </DataGrid.Resources>
         <DataGrid.Columns>
             <DataGridTextColumn Header="Advances" Binding="{Binding Advances, Mode=OneWay}" IsReadOnly="True"/>
-            <DataGridTextColumn Header="Egg Seed" Binding="{Binding Seed, StringFormat={}{0:X8}, Mode=OneWay}" IsReadOnly="True" />
+            <DataGridTextColumn Header="Egg Seed" Binding="{Binding Seed, StringFormat={}{0:X8}, Mode=OneWay}" IsVisible="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type UserControl}}, Path=ShowEggSeed}" IsReadOnly="True" />
             <DataGridTextColumn Header="PID" Binding="{Binding PID, StringFormat={}{0:X8}, Mode=OneWay}" IsReadOnly="True" />
-            <DataGridTextColumn Header="EC" Binding="{Binding EC, StringFormat={}{0:X8}, Mode=OneWay}" IsReadOnly="True" />
+			<DataGridTextColumn Header="EC" Binding="{Binding EC, StringFormat={}{0:X8}, Mode=OneWay}" IsReadOnly="True" />
+			<DataGridTextColumn Header="Item" Binding="{Binding HeldItem, Mode=OneWay}" IsVisible="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type UserControl}}, Path=ShowHeldItem}" IsReadOnly="True" />
+            <DataGridTextColumn Header="Slot" Binding="{Binding EncounterSlot, Mode=OneWay}" IsVisible="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type UserControl}}, Path=ShowEncounterSlot}" IsReadOnly="True" />
             <DataGridTextColumn Header="Shiny" Binding="{Binding Shiny}" IsReadOnly="True" />
             <DataGridTemplateColumn Header="HP" CellTemplate="{StaticResource HPTemplate}"/>
             <DataGridTemplateColumn Header="Atk" CellTemplate="{StaticResource AtkTemplate}"/>
@@ -61,9 +63,9 @@
             <DataGridTemplateColumn Header="SpA" CellTemplate="{StaticResource SpATemplate}"/>
             <DataGridTemplateColumn Header="SpD" CellTemplate="{StaticResource SpDTemplate}"/>
             <DataGridTemplateColumn Header="Spe" CellTemplate="{StaticResource SpeedTemplate}"/>
-            <DataGridTextColumn Header="Gender" Binding="{Binding Gender}" IsReadOnly="True" />
+            <DataGridTextColumn Header="Gender" Binding="{Binding Gender}" IsVisible="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type UserControl}}, Path=ShowGender}"  IsReadOnly="True" />
             <DataGridTextColumn Header="Nature" Binding="{Binding Nature, Mode=OneWay}" IsReadOnly="True" />
-            <DataGridTextColumn Header="Ability" Binding="{Binding Ability, Mode=OneWay}" IsReadOnly="True" />
+            <DataGridTextColumn Header="Ability" Binding="{Binding Ability, Mode=OneWay}" IsVisible="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type UserControl}}, Path=ShowAbility}"  IsReadOnly="True" />
         </DataGrid.Columns>
     </DataGrid>
 </UserControl>

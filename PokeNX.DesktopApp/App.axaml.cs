@@ -1,11 +1,13 @@
-using Avalonia;
-using Avalonia.Controls.ApplicationLifetimes;
-using Avalonia.Markup.Xaml;
-using PokeNX.DesktopApp.ViewModels;
-using PokeNX.DesktopApp.Views;
-
 namespace PokeNX.DesktopApp
 {
+    using Avalonia;
+    using Avalonia.Controls.ApplicationLifetimes;
+    using Avalonia.Markup.Xaml;
+    using Models;
+    using Utils;
+    using ViewModels;
+    using Views;
+
     public class App : Application
     {
         public override void Initialize()
@@ -19,8 +21,10 @@ namespace PokeNX.DesktopApp
             {
                 desktop.MainWindow = new MainWindow
                 {
-                    DataContext = new MainWindowViewModel(),
+                    DataContext = new MainWindowViewModel()
                 };
+
+                desktop.ShutdownRequested += (_, _) => EventAggregator.SendMessage(new OnExitMessage());
             }
 
             base.OnFrameworkInitializationCompleted();

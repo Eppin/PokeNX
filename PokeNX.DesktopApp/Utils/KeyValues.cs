@@ -35,5 +35,9 @@
         public static List<KeyValue<Nature, string>> Natures = Enum.GetValues<Nature>()
             .Select(n => new KeyValue<Nature, string>(n, n.ToString()))
             .ToList();
+
+        public static List<KeyValue<Generator, string>> Generators = Enum.GetValues<Generator>()
+            .Select(n => new KeyValue<Generator, string>(n, n.ToString()))
+            .ToList();
     }
 }

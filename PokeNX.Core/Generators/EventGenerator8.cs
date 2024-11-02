@@ -5,14 +5,14 @@
     using Models.Enums;
     using RNG;
 
-    public class StationaryGenerator8 : Generator8
+    public class EventGenerator8 : Generator8
     {
-        public StationaryGenerator8(uint initialAdvances, uint maximumAdvances = 1_000)
+        public EventGenerator8(uint initialAdvances, uint maximumAdvances = 1_000)
             : base(initialAdvances, maximumAdvances)
         {
         }
 
-        public List<GenerateResult> Generate(ulong s0, ulong s1, Stationary8Request request)
+        public List<GenerateResult> Generate(ulong s0, ulong s1, Event8Request request)
         {
             var rng = new XorShift(s0, s1);
             rng.Advance(InitialAdvances);
@@ -22,6 +22,7 @@
             for (uint advances = 0; advances < MaximumAdvances; advances++, rng.Next())
             {
                 var gen = new XorShift(rng);
+                gen.Next(); // We need to roll..
 
                 var result = new GenerateResult
                 {
@@ -29,22 +30,8 @@
                     EC = gen.Next()
                 };
 
-                var shinyRandom = gen.Next();
-
                 var pid = gen.Next();
                 result.PID = pid;
-
-                var psv = shinyRandom & 0xFFFF ^ shinyRandom >> 0x10;
-                var tsv = pid >> 0x10 ^ pid & 0xFFFF;
-
-                var shiny = Shiny.None;
-
-                if ((psv ^ tsv) < 0x10)
-                    shiny = (psv ^ tsv) == 0
-                        ? Shiny.Square
-                        : Shiny.Star;
-
-                result.Shiny = shiny;
 
                 var ivs = new[] { -1, -1, -1, -1, -1, -1 };
 
@@ -79,16 +66,6 @@
                 result.SpA = new IVs((byte)ivs[3]);
                 result.SpD = new IVs((byte)ivs[4]);
                 result.Speed = new IVs((byte)ivs[5]);
-
-                result.Ability = (Ability)(gen.Next() % 2);
-
-                result.Gender = request.GenderRatio switch
-                {
-                    255 => Gender.Genderless,
-                    254 => Gender.Female,
-                    0 => Gender.Male,
-                    _ => (Gender)(gen.Next() % 253 + 1 < request.GenderRatio ? 1 : 0)
-                };
 
                 result.Nature = (Nature)(gen.Next() % 25);
 

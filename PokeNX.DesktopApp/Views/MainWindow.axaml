@@ -32,23 +32,26 @@
                 <TextBlock Text="IP Address:" VerticalAlignment="Center"/>
                 <TextBox Width="130" Text="{Binding IPAddress}"/>
                 <NumericUpDown Value="{Binding Port}" Minimum="0" ShowButtonSpinner="False"/>
-                
+
                 <TextBlock Text="Seed0:" VerticalAlignment="Center"/>
                 <TextBox Width="160" Text="{Binding Seed0, StringFormat={}{0:X16}, Mode=OneWay}"/>
-                
+
                 <TextBlock Text="Seed1:" VerticalAlignment="Center"/>
                 <TextBox Width="160" Text="{Binding Seed1, StringFormat={}{0:X16}, Mode=OneWay}"/>
-                
+
                 <TextBlock Text="Advances:" VerticalAlignment="Center"/>
                 <TextBox Width="80" Text="{Binding Advances, Mode=OneWay}"/>
-                
-                <Button Command="{Binding OnConnectCommand}" Content="{Binding ConnectionString}"/>
+
+                <Button Command="{Binding OnConnectCommand}" Content="{Binding ConnectionString}" IsEnabled="{Binding !IsConnected}"/>
                 <Button Command="{Binding OnUseSeedCommand}" Content="Use Seed" IsEnabled="{Binding IsConnected}"/>
             </StackPanel>
 
             <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Center" Spacing="10" Margin="5">
                 <TextBlock Text="Game:" VerticalAlignment="Center"/>
                 <TextBox Text="{Binding ConnectedGame.Game}" Width="150" HorizontalContentAlignment="Center" IsEnabled="False"/>
+
+                <TextBlock Text="Version:" VerticalAlignment="Center"/>
+                <TextBox Text="{Binding ConnectedGame.Version}" Width="150" HorizontalContentAlignment="Center" IsEnabled="False"/>
 
                 <TextBlock Text="TID:" VerticalAlignment="Center"/>
                 <TextBox Text="{Binding ConnectedGame.TID}" Width="65" IsEnabled="False"/>
@@ -73,7 +76,7 @@
                 </TabItem>
 
                 <TabItem Header="Wild">
-                    <TextBlock Text="RNG Wild stuff, like all Unowns?"/>
+                    <views:Gen8Wild DataContext="{Binding Gen8WildViewModel}"/>
                 </TabItem>
             </TabControl>
         </Grid>

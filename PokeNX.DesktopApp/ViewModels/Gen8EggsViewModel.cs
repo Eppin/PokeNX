@@ -59,6 +59,13 @@
         private bool _masuda = true;
         public bool Masuda { get => _masuda; set => this.RaiseAndSetIfChanged(ref _masuda, value); }
 
+        private bool _isConnected;
+        public bool IsConnected
+        {
+            get => _isConnected;
+            set => this.RaiseAndSetIfChanged(ref _isConnected, value);
+        }
+
         private string _errorText = string.Empty;
         public string ErrorText
         {
@@ -71,8 +78,6 @@
         }
 
         public bool HasError => !string.IsNullOrWhiteSpace(ErrorText);
-
-        public IEnumerable<string> Compatibilities { get; set; } = new[] { "The two don't seem to like each other", "The two seem to get along", "The two seem to get along very well" };
 
         public IEnumerable<string> Abilities { get; set; } = new[] { "1", "2", "H" };
 
@@ -108,6 +113,11 @@
                 if (message.SID.HasValue) _sid = message.SID.Value;
                 if (message.OvalCharm.HasValue) _ovalCharm = message.OvalCharm.Value;
                 if (message.ShinyCharm.HasValue) _shinyCharm = message.ShinyCharm.Value;
+            });
+
+            EventAggregator.RegisterHandler<ConnectionMessage>(message =>
+            {
+                IsConnected = message.IsConnected;
             });
 
             OnGenerateCommand = ReactiveCommand.Create(GenerateExecute);

@@ -30,6 +30,27 @@ namespace PokeNX.Core.RNG
 
         public uint Next()
         {
+            var t = NextInternal();
+
+            return (uint)(t % 0xFFFFFFFF + 0x80000000);
+        }
+
+        public uint Next(uint min, uint max)
+        {
+            var t = NextInternal();
+
+            var diff = max - min;
+
+            return (uint)(t % diff) + min;
+        }
+
+        public override string ToString()
+        {
+            return $"S[0]: {_s0 & 0xFFFFFFFFFFFFFFFF:X16}  S[1]: {_s1 & 0xFFFFFFFFFFFFFFFF:X16}";
+        }
+
+        private ulong NextInternal()
+        {
             var t = _s0 & 0xFFFFFFFF;
             var s = _s1 >> 32;
 
@@ -40,12 +61,7 @@ namespace PokeNX.Core.RNG
             _s0 = ((_s1 & 0xFFFFFFFF) << 32) | (_s0 >> 32);
             _s1 = t << 32 | (_s1 >> 32);
 
-            return (uint)(t % 0xFFFFFFFF + 0x80000000);
-        }
-
-        public override string ToString()
-        {
-            return $"S[0]: {_s0 & 0xFFFFFFFFFFFFFFFF:X16}  S[1]: {_s1 & 0xFFFFFFFFFFFFFFFF:X16}";
+            return t;
         }
     }
 }
