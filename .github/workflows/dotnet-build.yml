@@ -16,7 +16,7 @@ jobs:
 
     steps:
     - name: Checkout
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
       with:
         fetch-depth: 0
 
@@ -40,7 +40,7 @@ jobs:
     - name: Build for Windows x64
       uses: ./.github/actions/app-build
       with:
-        dotnet: 'net6.0-windows'
+        dotnet: 'net6.0'
         platform: 'win-x64'
         project: 'PokeNX.DesktopApp'
         artifact: 'windows-x64'
