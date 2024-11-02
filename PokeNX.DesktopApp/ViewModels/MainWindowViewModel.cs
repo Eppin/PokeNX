@@ -102,9 +102,6 @@ namespace PokeNX.DesktopApp.ViewModels
 
                 IsConnected = true;
 
-                DiamondPearlService.TestBoxPointer();
-                return;
-
                 _cancellationTokenSource = new CancellationTokenSource();
 
                 var thread = new Thread(() => CalulateMainRNG(_cancellationTokenSource.Token));
